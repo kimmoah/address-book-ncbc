@@ -2,9 +2,20 @@
 <HTML>
     <HEAD>
         <title>NCBC Address Book</title>
+
+        <meta name="google-signin-clientid" content="968458110404.apps.googleusercontent.com" />
+        <meta name="google-signin-scope" content="https://www.googleapis.com/auth/plus.login" />
+        <meta name="google-signin-requestvisibleactions" content="http://schemas.google.com/AddActivity" />
+        <meta name="google-signin-cookiepolicy" content="single_host_origin" />
+
         <script type="text/javascript" src="./src/public/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./src/authentication.js"></script>
     </HEAD>
     <BODY>
+        <div id="temp">
+            You are not signed in.
+        </div>
+        <button id="signinButton">Sign in with Google</button>
+        <button id="signoutButton" style="display: none;">Sign out with Google</button>
     </BODY>
 </HTML>
