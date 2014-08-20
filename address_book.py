@@ -6,38 +6,49 @@ except ImportError:
   from elementtree import ElementTree
 from sets import Set
 
-import gdata.apps.groups.client
-import gdata.spreadsheet.service
-import gdata.service
-import atom.service
-import gdata.spreadsheet
+import ConfigParser
 import atom
+import atom.service
+import gdata.apps.groups.client
+import gdata.service
+import gdata.spreadsheet
+import gdata.spreadsheet.service
 import getopt
-import sys
-import string
+import getpass
 import re
+import string
+import sys
+
+class Constants:
+  DEFAULT_DOMAIN = 'ncbctimothy.org'
 
 class NCBCTimothyAddressSpreadsheet:
-
   def __init__(self, email, password):
     self.gd_client = gdata.spreadsheet.service.SpreadsheetsService()
     self.gd_client.email = email
     self.gd_client.password = password
-    self.gd_client.source = 'Spreadsheets GData Sample'
+    self.gd_client.source = 'NCBC address book'
     self.gd_client.ProgrammaticLogin()
-    self.curr_wksht_id = ''
     self.list_feed = None
     self.answer_all = False
 
-    self.domain = 'ncbctimothy.org'
+    self.domain = Constants.DEFAULT_DOMAIN
     self.groupClient = gdata.apps.groups.client.GroupsProvisioningClient(domain=self.domain)
     self.groupClient.ClientLogin(email=email, password=password, source='apps')
-    all_groups = self.groupClient.RetrieveAllGroups()
+    self.all_groups = self.groupClient.RetrieveAllGroups()
     print('All mailing lists')
-    for group in all_groups.entry:
+    self.all_email_group_id = Set()
+    for group in self.all_groups.entry:
       print '\t', group.GetGroupName(), group.GetGroupId()
+      self.all_email_group_id.update([group.GetGroupId()])
 
-  def _CheckSpreadsheetAddress(self, spread_sheet_key):
+  def _DeleteAllGroups(self):
+    print('Delete all mailing lists')
+    for group in self.all_groups.entry:
+      print '\t', group.GetGroupName(), group.GetGroupId()
+      self.groupClient.DeleteGroup(group.GetGroupId())
+
+  def CheckSpreadsheetAddress(self, spread_sheet_key):
     feed = self.gd_client.GetWorksheetsFeed(spread_sheet_key)
     mokjang_re = re.compile('(.*)\(([a-z]+)\)')
     for i, entry in enumerate(feed.entry):
@@ -60,6 +71,11 @@ class NCBCTimothyAddressSpreadsheet:
           print '  %s: %s' % (name, email)
           member_email_dict[email] = name
         group_mailing_set = Set()
+
+        if not email_group_id in self.all_email_group_id:
+          print 'Create a new group %s: %s' %(email_group_id, mokjang_result.group(1))
+          self.groupClient.CreateGroup(email_group_id, unicode(mokjang_result.group(1), 'utf-8'))
+
         self._CheckMailingList(email_group_id, group_mailing_set)
 
         members_not_in_group = Set()
@@ -127,14 +143,6 @@ class NCBCTimothyAddressSpreadsheet:
       else:
         print ('Skipped')
    
-
-  
-  def Run(self):
-    # Check 'single Timothy 2012'
-    self._CheckSpreadsheetAddress('tIqN7d9096WggJYhJFAofXA')
-    # Check 'Event Mailing List'
-    self._CheckSpreadsheetAddress('ttfr39JtV6FM_nDCdzVRU1Q')
-
 def main():
   # parse command line options
   try:
@@ -143,25 +151,38 @@ def main():
     print 'python spreadsheetExample.py --user [username] --pw [password] '
     sys.exit(2)
   
-  # Fill following.
-  # e.g., YOURID@ncbctimothy.org
-  user = 'asiandrummer@ncbctimothy.org'
-  pw = 'otsiva86'
-
   # Process options
+  user = ''
+  pw = ''
+  # Use userid and password from the command line if exists.
   for o, a in opts:
     if o == "--user":
       user = a
     elif o == "--pw":
       pw = a
 
+  # Read userid and password if they're not set.
+  if user == '':
+    message = 'Userid (i.e., YOURID@' + Constants.DEFAULT_DOMAIN +' or just YOURID): '
+    user = raw_input(message)
+    if user.find('@') == -1:
+      user += '@' + Constants.DEFAULT_DOMAIN
+      print 'Set Userid to ', user
+  if pw == '':
+    pw = getpass.getpass()
+
   if user == '' or pw == '':
     print 'python spreadsheetExample.py --user [username] --pw [password] '
     sys.exit(2)
         
-  sample = NCBCTimothyAddressSpreadsheet(user, pw)
-  sample.Run()
+  domain_manager = NCBCTimothyAddressSpreadsheet(user, pw)
 
+  config = ConfigParser.RawConfigParser()
+  config.read('spreadsheet.cfg')
+
+  for section in config.sections():
+    key = config.get(section, 'spread_sheet_key')
+    domain_manager.CheckSpreadsheetAddress(key)
 
 if __name__ == '__main__':
   main()
