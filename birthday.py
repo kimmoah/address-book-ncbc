@@ -10,18 +10,19 @@ from sets import Set
 from datetime import datetime
 from collections import defaultdict
 
-import operator
-import gdata.apps.groups.client
-import gdata.spreadsheet.service
-import gdata.service
-import atom.service
-import gdata.spreadsheet
+import ConfigParser
 import atom
+import atom.service
+import gdata.apps.groups.client
+import gdata.service
+import gdata.spreadsheet
+import gdata.spreadsheet.service
 import getopt
 import getpass
-import sys
-import string
+import operator
 import re
+import string
+import sys
 
 class Constants:
   DEFAULT_DOMAIN = 'gmail.com'
@@ -37,7 +38,7 @@ class NCBCTimothyAddressSpreadsheet:
     self.list_feed = None
     self.answer_all = False
 
-  def _CheckSpreadsheetAddress(self, spread_sheet_key):
+  def CheckSpreadsheetAddress(self, spread_sheet_key):
     this_month = datetime.now().month
     next_month = this_month + 1
     if next_month is 13:
@@ -110,10 +111,6 @@ class NCBCTimothyAddressSpreadsheet:
       for error_message in mokjang_error[1]:
         print '    ', error_message
   
-  def Run(self):
-    # Check 'single Timothy 2012'
-    self._CheckSpreadsheetAddress('tIqN7d9096WggJYhJFAofXA')
-
 def main():
   # parse command line options
   try:
@@ -147,7 +144,10 @@ def main():
     sys.exit(2)
         
   sample = NCBCTimothyAddressSpreadsheet(user, pw)
-  sample.Run()
+
+  config = ConfigParser.RawConfigParser()
+  config.read('spreadsheet.cfg')
+  sample.CheckSpreadsheetAddress(config.get('SaenuriYoung', 'spread_sheet_key'))
 
 
 if __name__ == '__main__':
