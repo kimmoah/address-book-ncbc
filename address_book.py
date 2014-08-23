@@ -67,7 +67,7 @@ class NCBCTimothyAddressSpreadsheet:
           email = entry.custom['email'].text
           if email:
             # Some email address is None
-            email = email.strip()
+            email = email.strip().lower()
           print '  %s: %s' % (name, email)
           member_email_dict[email] = name
         group_mailing_set = Set()
