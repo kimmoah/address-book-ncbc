@@ -50,11 +50,11 @@ class NCBCTimothyAddressSpreadsheet:
 
   def CheckSpreadsheetAddress(self, spread_sheet_key):
     feed = self.gd_client.GetWorksheetsFeed(spread_sheet_key)
-    mokjang_re = re.compile('(.*)\(([a-z]+)\)')
+    mokjang_re = re.compile('(.*)\(([A-Za-z]+)\)')
     for i, entry in enumerate(feed.entry):
       mokjang_result = mokjang_re.match(entry.title.text)
       if mokjang_result:
-        email_group_id = mokjang_result.group(2)
+        email_group_id = mokjang_result.group(2).lower()
         email_group_id += '@'
         email_group_id += self.domain
         print 'Checking %s (Email = %s)' % (mokjang_result.group(1), email_group_id)
@@ -167,9 +167,8 @@ def main():
     user = raw_input(message)
     if user.find('@') == -1:
       user += '@' + Constants.DEFAULT_DOMAIN
-      print 'Set Userid to ', user
   if pw == '':
-    pw = getpass.getpass()
+    pw = getpass.getpass('Password for %s:' % user)
 
   if user == '' or pw == '':
     print 'python spreadsheetExample.py --user [username] --pw [password] '
