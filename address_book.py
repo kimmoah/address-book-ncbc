@@ -74,7 +74,7 @@ class NCBCTimothyAddressSpreadsheet:
 
         if not email_group_id in self.all_email_group_id:
           print 'Create a new group %s: %s' %(email_group_id, mokjang_result.group(1))
-          self.groupClient.CreateGroup(email_group_id, unicode(mokjang_result.group(1), 'utf-8'))
+          self.groupClient.CreateGroup(email_group_id, unicode(mokjang_result.group(1), 'utf-8'), email_permission='Anyone')
 
         self._CheckMailingList(email_group_id, group_mailing_set)
 
