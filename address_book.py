@@ -63,6 +63,8 @@ class NCBCTimothyAddressSpreadsheet:
 	list_feed = self.gd_client.GetListFeed(spread_sheet_key, curr_wksht_id)
         member_email_dict = {} 
         for i, entry in enumerate(list_feed.entry):
+          if not entry.custom['name'].text:
+            break
           name = entry.custom['name'].text.strip()
           email = entry.custom['email'].text
           if email:
