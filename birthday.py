@@ -37,7 +37,6 @@ class BirthdayCallback(object):
     Do something with birthday!
     dt: datetime object
     """
-    
 
   @abc.abstractmethod
   def no_birthday(self, name, mokjang):
@@ -107,5 +106,3 @@ class NCBCTimothyAddressSpreadsheet:
           birthday_callback.found_birthday(name, mokjang_name, d)
 
     birthday_callback.end()
-
-
