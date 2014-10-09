@@ -11,21 +11,30 @@ from datetime import datetime
 from collections import defaultdict
 
 import ConfigParser
+import abc
 import atom
 import atom.service
 import gdata.apps.groups.client
 import gdata.service
 import gdata.spreadsheet
 import gdata.spreadsheet.service
-import getopt
-import getpass
 import operator
 import re
 import string
-import sys
+import util
 
-class Constants:
-  DEFAULT_DOMAIN = 'gmail.com'
+class BirthdayCallback(object):
+  __metaclass__ = abc.ABCMeta
+
+  @abc.abstractmethod
+  def found_birthday(self, name, mokjang, year, month, day):
+    """Do something with birthday!"""
+
+  def no_birthday(self, name, mokjang):
+    """Found people without birthday field set."""
+
+  def invalid_birthday(self, name, mokjang, date_string):
+    """Error handling for invalid birthday."""
 
 class NCBCTimothyAddressSpreadsheet:
 
@@ -112,36 +121,7 @@ class NCBCTimothyAddressSpreadsheet:
         print '    ', error_message
   
 def main():
-  # parse command line options
-  try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["user=", "pw="])
-  except getopt.error, msg:
-    print 'python spreadsheetExample.py --user [username] --pw [password] '
-    sys.exit(2)
-  
-  # Process options
-  user = ''
-  pw = ''
-  # Use userid and password from the command line if exists.
-  for o, a in opts:
-    if o == "--user":
-      user = a
-    elif o == "--pw":
-      pw = a
-
-  # Read userid and password if they're not set.
-  if user == '':
-    message = 'Userid (i.e., YOURID@' + Constants.DEFAULT_DOMAIN + ' or just YOURID): '
-    user = raw_input(message)
-    if user.find('@') == -1:
-      user += '@' + Constants.DEFAULT_DOMAIN
-      print 'Set Userid to ', user
-  if pw == '':
-    pw = getpass.getpass()
-
-  if user == '' or pw == '':
-    print 'python spreadsheetExample.py --user [username] --pw [password] '
-    sys.exit(2)
+  user, pw = util.get_userid_and_password('gmail.com')
         
   sample = NCBCTimothyAddressSpreadsheet(user, pw)
 
