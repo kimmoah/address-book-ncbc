@@ -69,7 +69,7 @@ class NCBCTimothyAddressSpreadsheet:
     for i, entry in enumerate(feed.entry):
       mokjang_result = mokjang_re.match(entry.title.text)
       if mokjang_result:
-        mokjang_name = mokjang_result.group(1)
+        mokjang_name = mokjang_result.group(1).strip()
         print 'Checking birthday in ', mokjang_name
 
         id_parts = feed.entry[i].id.text.split('/')
