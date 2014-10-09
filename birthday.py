@@ -8,7 +8,6 @@ except ImportError:
 from sets import Set
 
 from datetime import datetime
-from collections import defaultdict
 
 import ConfigParser
 import abc
@@ -18,21 +17,33 @@ import gdata.apps.groups.client
 import gdata.service
 import gdata.spreadsheet
 import gdata.spreadsheet.service
-import operator
 import re
 import string
-import util
 
 class BirthdayCallback(object):
   __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
-  def found_birthday(self, name, mokjang, year, month, day):
-    """Do something with birthday!"""
+  def start(self):
+      """Start iterating values"""
 
+  @abc.abstractmethod
+  def end(self):
+      """end iterating values"""
+
+  @abc.abstractmethod
+  def found_birthday(self, name, mokjang, dt):
+    """
+    Do something with birthday!
+    dt: datetime object
+    """
+    
+
+  @abc.abstractmethod
   def no_birthday(self, name, mokjang):
     """Found people without birthday field set."""
 
+  @abc.abstractmethod
   def invalid_birthday(self, name, mokjang, date_string):
     """Error handling for invalid birthday."""
 
@@ -47,19 +58,14 @@ class NCBCTimothyAddressSpreadsheet:
     self.list_feed = None
     self.answer_all = False
 
-  def CheckSpreadsheetAddress(self, spread_sheet_key):
-    this_month = datetime.now().month
-    next_month = this_month + 1
-    if next_month is 13:
-      next_month = 1
-    print 'This month: %d, next month: %d' % (this_month, next_month)
+    config = ConfigParser.RawConfigParser()
+    config.read('spreadsheet.cfg')
+    self.spread_sheet_key = config.get('SaenuriYoung', 'spread_sheet_key')
 
-    this_month_birthday = {}
-    next_month_birthday = {}
+  def CheckSpreadsheetAddress(self, birthday_callback):
+    birthday_callback.start()
 
-    birthday_error = defaultdict(list)
-
-    feed = self.gd_client.GetWorksheetsFeed(spread_sheet_key)
+    feed = self.gd_client.GetWorksheetsFeed(self.spread_sheet_key)
     mokjang_re = re.compile('(.*)\(([a-z]+)\)')
     for i, entry in enumerate(feed.entry):
       mokjang_result = mokjang_re.match(entry.title.text)
@@ -69,7 +75,7 @@ class NCBCTimothyAddressSpreadsheet:
 
         id_parts = feed.entry[i].id.text.split('/')
         curr_wksht_id = id_parts[len(id_parts) - 1]
-	list_feed = self.gd_client.GetListFeed(spread_sheet_key, curr_wksht_id)
+	list_feed = self.gd_client.GetListFeed(self.spread_sheet_key, curr_wksht_id)
 
         for i, entry in enumerate(list_feed.entry):
           name = entry.custom['name'].text.strip()
@@ -85,7 +91,7 @@ class NCBCTimothyAddressSpreadsheet:
             continue
 
           if not birthday:
-            birthday_error[mokjang_name].append('No birthday for %s' % utf8_name)
+            birthday_callback.no_birthday(name, mokjang_name)
             continue
 
           birthday = birthday.strip()
@@ -95,40 +101,11 @@ class NCBCTimothyAddressSpreadsheet:
           try:
             d = datetime.strptime(birthday, date_format)
           except ValueError:
-            birthday_error[mokjang_name].append('Invalid birthday for %s : %s' % (utf8_name, birthday))
+            birthday_callback.invalid_birthday(name, mokjang_name, birthday)
+            continue
 
-          if d.month is this_month:
-            this_month_birthday[name] = d.date().strftime(date_format)
-          elif d.month is next_month:
-            next_month_birthday[name] = d.date().strftime(date_format)
+          birthday_callback.found_birthday(name, mokjang_name, d)
 
-    sorted_this_month_birthday = sorted(this_month_birthday.iteritems(),
-                                        key=operator.itemgetter(1))
-    print ('\nBirthday of this month')
-    for item in sorted_this_month_birthday:
-      print '  %s : %s' % (item[0], item[1])
-
-    sorted_next_month_birthday = sorted(next_month_birthday.iteritems(),
-                                        key=operator.itemgetter(1))
-    print ('\nBirthday of next month')
-    for item in sorted_next_month_birthday:
-      print '  %s : %s' % (item[0], item[1])
-
-    print ('\nBirthday errors')
-    for mokjang_error in birthday_error.items():
-      print '  ', mokjang_error[0]
-      for error_message in mokjang_error[1]:
-        print '    ', error_message
-  
-def main():
-  user, pw = util.get_userid_and_password('gmail.com')
-        
-  sample = NCBCTimothyAddressSpreadsheet(user, pw)
-
-  config = ConfigParser.RawConfigParser()
-  config.read('spreadsheet.cfg')
-  sample.CheckSpreadsheetAddress(config.get('SaenuriYoung', 'spread_sheet_key'))
+    birthday_callback.end()
 
 
-if __name__ == '__main__':
-  main()
