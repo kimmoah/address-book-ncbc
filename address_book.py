@@ -27,7 +27,7 @@ class NCBCTimothyAddressSpreadsheet:
     self.list_feed = None
     self.answer_all = False
 
-    self.domain = Constants.DEFAULT_DOMAIN
+    self.domain = 'ncbctimothy.org'
     self.groupClient = gdata.apps.groups.client.GroupsProvisioningClient(domain=self.domain)
     self.groupClient.ClientLogin(email=email, password=password, source='apps')
     self.all_groups = self.groupClient.RetrieveAllGroups()
