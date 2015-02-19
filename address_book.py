@@ -45,7 +45,7 @@ class NCBCTimothyAddressSpreadsheet:
 
   def CheckSpreadsheetAddress(self, spread_sheet_key):
     feed = self.gd_client.GetWorksheetsFeed(spread_sheet_key)
-    mokjang_re = re.compile('(.*)\(([A-Za-z]+)\)')
+    mokjang_re = re.compile('(.*)\(([A-Za-z0-9]+)\)')
     for i, entry in enumerate(feed.entry):
       mokjang_result = mokjang_re.match(entry.title.text)
       if mokjang_result:
