@@ -1,0 +1,107 @@
+<!doctype html>
+<html ng-app="SyncMailingList">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+      <title>Sync Mailing List</title>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.css">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-cookies.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-aria.min.js"></script>
+
+
+    <!-- Angular Material Javascript now available via Google CDN; version 0.11.2 used here -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.js"></script>
+
+
+    <script src="app.js"></script>
+    <script type="text/javascript">
+      var CLIENT_ID = '666028720508-t7c4nrhsfctgg7uvjtldics8jl6nvra3.apps.googleusercontent.com';
+
+      var SCOPES = ['https://www.googleapis.com/auth/admin.directory.group https://spreadsheets.google.com/feeds'];
+
+      /**
+       * Check if current user has authorized this application.
+       */
+      function checkAuth() {
+        gapi.auth.authorize(
+          {
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+          }, handleAuthResult);
+      }
+
+      function initializeApp() {
+        var $scope = angular.element('body').scope();
+
+        $scope.$apply(function(){
+          $scope.loadDirectoryApi();
+        })
+      }
+
+      /**
+       * Handle response from authorization server.
+       *
+       * @param {Object} authResult Authorization result.
+       */
+      function handleAuthResult(authResult) {
+        var authorizeDiv = document.getElementById('authorize-div');
+        if (authResult && !authResult.error) {
+          // Hide auth UI, then load client library.
+          authorizeDiv.style.display = 'none';
+          initializeApp();
+        } else {
+          // Show auth UI, allowing the user to initiate authorization by
+          // clicking authorize button.
+          authorizeDiv.style.display = 'inline';
+        }
+      }
+      function handleAuthClick(event) {
+        gapi.auth.authorize(
+          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+          handleAuthResult);
+        return false;
+      }
+
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+  </head>
+  <body layout="row" ng-controller="SyncMailingListCtrl as ctrl">
+    <div layout="column" layout-fill tabIndex="-1" role="main">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+	  <div>
+	    <span>Sync NCBC Mailing list</span>
+	  </div>
+	</div>
+      </md-toolbar>
+    <md-content ng-view md-scroll-xy flex class="md-padding">
+    <div id="authorize-div" style="display: none">
+<div layout="row" layout-align="center center">
+    <!--Button for the user to click to initiate auth sequence -->
+    <md-button  class="md-raised md-primary" id="authorize-button" onclick="handleAuthClick(event)">
+    Login
+    </md-button>
+</div>
+    </div>
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Total Members in Mailinglist</tr></thead>
+      <tbody>
+        <tr ng-repeat="group in groups">
+          <td>{{ group.name }}</td>
+          <td>{{ group.email }}</td>
+          <td>{{ group.members.length }}</td>
+        </tr>
+      </tbody>
+    </table>
+    </md-content>
+    </div>
+  </body>
+</html>
+

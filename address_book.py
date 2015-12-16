@@ -27,6 +27,7 @@ class NCBCTimothyAddressSpreadsheet:
     self.list_feed = None
     self.answer_all = False
 
+    return
     self.domain = 'ncbctimothy.org'
     self.groupClient = gdata.apps.groups.client.GroupsProvisioningClient(domain=self.domain)
     self.groupClient.ClientLogin(email=email, password=password, source='apps')
@@ -44,6 +45,7 @@ class NCBCTimothyAddressSpreadsheet:
       self.groupClient.DeleteGroup(group.GetGroupId())
 
   def CheckSpreadsheetAddress(self, spread_sheet_key):
+    print (spread_sheet_key)
     feed = self.gd_client.GetWorksheetsFeed(spread_sheet_key)
     mokjang_re = re.compile('(.*)\(([A-Za-z0-9]+)\)')
     for i, entry in enumerate(feed.entry):
