@@ -23,7 +23,7 @@
     <script type="text/javascript">
       var CLIENT_ID = '666028720508-t7c4nrhsfctgg7uvjtldics8jl6nvra3.apps.googleusercontent.com';
 
-      var SCOPES = ['https://www.googleapis.com/auth/admin.directory.group https://spreadsheets.google.com/feeds'];
+      var SCOPES = ['https://www.googleapis.com/auth/admin.directory.group https://www.googleapis.com/auth/spreadsheets'];
 
       /**
        * Check if current user has authorized this application.
@@ -90,18 +90,32 @@
     </md-button>
 </div>
     </div>
-    <table>
-      <thead><tr><th>Name</th><th>Email</th><th>Total Members in Mailinglist</tr></thead>
-      <tbody>
-        <tr ng-repeat="group in groups">
-          <td>{{ group.name }}</td>
-          <td>{{ group.email }}</td>
-          <td>{{ group.members.length }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div ng-show="ctrl.login">
+      <div ng-if="!ctrl.groups">
+        Loading Groups: <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+      </div>
+      <div ng-if="!ctrl.loadAddressBookDone">
+        Loading AddressBook from Google Spreadsheet: <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Status</th><th>Email</th><th>Total Members in Mailinglist</tr></thead>
+        <tbody>
+          <tr ng-repeat="(email, group) in ctrl.groups">
+            <td>{{ group.name }}</td>
+            <td>
+              <md-progress-circular ng-if="!ctrl.loadAddressBookDone" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>
+              <div ng-if="ctrl.loadAddressBookDone">
+              </div>
+            </td>
+            <td>{{ group.email }}</td>
+            <td><md-progress-circular ng-if="!group.members" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>{{ group.members.length }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     </md-content>
     </div>
+    <pre id="output"></pre>
   </body>
 </html>
 
