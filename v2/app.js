@@ -1,29 +1,44 @@
 var app = angular.module('SyncMailingList', ['ngMaterial']);
 
-Group = function(ctrl, group) {
+GroupStatus = {
+  INITIALIZING: 1,
+  SYNCED: 2,
+  MODIFIED: 3,
+  NEW: 4,
+  DELETED: 5
+};
+
+Group = function(ctrl, email, name) {
+  this.status = GroupStatus.INITIALIZING;
   this.ctrl = ctrl;
-  this.id = group.id;
-  this.email = group.email;
-  this.name = group.name;
-  this.members = null;
-  this.newMembers = null;
-  this.oldMembers = null;
+  this.id = null;
+  this.email = email;
+  this.name = name;
+
+  this.groupsMembers = null;
+  this.groupMemberEmails = null;
+  this.addressBookMembers = null;
+};
+
+Group.prototype.setId = function(id) {
+  this.id = id;
   var request = gapi.client.directory.members.list({
     'groupKey': this.id,
   });
   request.execute(angular.bind(this, this.loadAllMembers));
 };
+
 Group.prototype.loadAllMembers = function(resp) {
-  this.members = resp.members;
+  this.groupsMembers = new Set();
+  this.groupMemberEmails = new Set();
+  for (var index in resp.members) {
+    this.groupsMembers.add(resp.members[index]);
+
+    var email = resp.members[index].email.toLowerCase().replace('saenuriyoung.net', 'ncbctimothy.org').trim();
+    this.groupMemberEmails.add(email);
+  }
   --this.ctrl.pendingLoadingMembers;
   this.ctrl.$scope.$apply();
-};
-
-NewGroup = function(ctrl, email, name) {
-  this.ctrl = ctrl;
-  this.email = email;
-  this.name = name;
-  this.members = [];
 };
 
 SyncMailingListCtrl = function($scope) {
@@ -34,6 +49,8 @@ SyncMailingListCtrl = function($scope) {
 
   this.login = false;
 
+  this.syncCompletedGroups = -1;
+
   $scope.loadDirectoryApi = angular.bind(this, this.loadDirectoryApi);
 };
 
@@ -43,7 +60,6 @@ SyncMailingListCtrl.prototype.loadDirectoryApi = function() {
 };
 
 SyncMailingListCtrl.prototype.loadGroups = function() {
-console.log(gapi.client);
   var request = gapi.client.directory.groups.list({
     'domain': 'ncbctimothy.org',
   });
@@ -63,14 +79,14 @@ console.log(gapi.client);
       }
 
 SyncMailingListCtrl.prototype.loadGroupsResponse = function(resp) {
-  console.log(resp);
   var users = resp.users;
   this.groups = {};
  
   if (resp.groups && resp.groups.length > 0) {
     this.pendingLoadingMembers = resp.groups.length;
     for (var i = 0; i < resp.groups.length; ++i) {
-      var group = new Group(this, resp.groups[i]);
+      var group = new Group(this, resp.groups[i].email, resp.groups[i].name);
+      group.setId(resp.groups[i].id);
       this.groups[group.email] = group;
     }
   } else {
@@ -78,6 +94,73 @@ SyncMailingListCtrl.prototype.loadGroupsResponse = function(resp) {
   }
   this.loadAddressBook();
   this.$scope.$apply();
+};
+
+SyncMailingListCtrl.prototype.syncAddressBook = function() {
+  this.syncCompletedGroups = 0;
+
+  for (var groupIndex in this.groups) {
+    var group = this.groups[groupIndex];
+    if (group.status == GroupStatus.INITIALIZING) {
+      console.log(group);
+      this.syncCompletedGroup();
+    } else if (group.status == GroupStatus.SYNCED) {
+      this.syncCompletedGroup();
+    } else if (group.status == GroupStatus.MODIFIED) {
+      var addressBookMembersSet = new Set();
+      for (var addressIndex in group.addressBookMembers) {
+        var addressBookMember = group.addressBookMembers[addressIndex];
+	addressBookMembersSet.add(addressBookMember.email.toLowerCase().replace('saenuriyoung.net', 'ncbctimothy.org').trim());
+      }
+ 	
+      console.log(addressBookMembersSet);
+      console.log(group.groupMemberEmails);
+      var newMemberIter = addressBookMembersSet.values();
+      for (var i = 0; i < addressBookMembersSet.size; ++i) {
+        var email = newMemberIter.next().value;
+        if (group.groupMemberEmails.has(email)) {
+          continue;
+        }
+        var resource = {
+         'email': email,
+        };
+
+        var request = gapi.client.directory.members.insert({
+          'groupKey': group.email,
+          'resource': resource
+        });
+        request.execute(angular.bind(this, this.syncCompletedGroup));
+      }
+      oldMemberIter = group.groupMemberEmails.values();
+      for (var i = 0; i < group.groupMemberEmails.size; ++i) {
+        var email = oldMemberIter.next().value;
+        if (addressBookMembersSet.has(email)) {
+          continue;
+        }
+        console.log(email);
+        var request = gapi.client.directory.members.delete({
+          'groupKey': group.email,
+          'memberKey': email
+        });
+        request.execute(angular.bind(this, this.syncCompletedGroup));
+      }
+    } else if (group.status == GroupStatus.NEW) {
+      var request = gapi.client.directory.groups.insert({
+        'email': group.email,
+        'name': group.name,
+      });
+      request.execute(angular.bind(this, this.syncCompletedGroup));
+    } else if (group.status == GroupStatus.DELETED) {
+      var request = gapi.client.directory.groups.delete({
+        'groupKey': group.id,
+      });
+      request.execute(angular.bind(this, this.syncCompletedGroup));
+    }
+  }
+};
+
+SyncMailingListCtrl.prototype.syncCompletedGroup = function() {
+  ++this.syncCompletedGroups;
 };
 
 SyncMailingListCtrl.prototype.loadAddressBook = function() {
@@ -125,14 +208,34 @@ SyncMailingListCtrl.prototype.loadAddressBook = function() {
       }
    } else {
      var spreadSheet = resp.response.result;
-     console.log(spreadSheet);
      for (var sheetId in spreadSheet) {
        var sheet = spreadSheet[sheetId];
        var fullEmail = sheet.email + '@ncbctimothy.org';
-       if (fullEmail in ctrl.groups) {
-       } else {
-         var group = new NewGroup(ctrl, fullEmail, sheet.name);
+       if (!(fullEmail in ctrl.groups)) {
+         var group = new Group(ctrl, fullEmail, sheet.name);
          ctrl.groups[fullEmail] = group;
+       }
+       ctrl.groups[fullEmail].addressBookMembers = sheet.members;
+     }
+     for (var groupIndex in ctrl.groups) {
+       var group = ctrl.groups[groupIndex];
+       if (group.groupsMembers == null && group.addressBookMembers) {
+         group.status = GroupStatus.NEW;
+       } else if (group.groupsMembers != null && group.addressBookMembers == null) {
+         group.status = GroupStatus.DELETED;
+       } else if (group.groupsMembers != null && group.addressBookMembers != null) {
+         if (group.groupsMembers.size != group.addressBookMembers.length) {
+           group.status = GroupStatus.MODIFIED;
+         } else {
+           group.status = GroupStatus.SYNCED;
+           for (var addressIndex in group.addressBookMembers) {
+             var addressBookMember = group.addressBookMembers[addressIndex];
+             var email = addressBookMember.email.toLowerCase().replace('saenuriyoung.net', 'ncbctimothy.org').trim();
+             if (!group.groupMemberEmails.has(email)) {
+               group.status = GroupStatus.MODIFIED;
+             }
+           }
+         }
        }
      }
      ctrl.loadAddressBookDone = true;

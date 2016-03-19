@@ -97,18 +97,32 @@
       <div ng-if="!ctrl.loadAddressBookDone">
         Loading AddressBook from Google Spreadsheet: <md-progress-circular md-mode="indeterminate"></md-progress-circular>
       </div>
-      <table>
-        <thead><tr><th>Name</th><th>Status</th><th>Email</th><th>Total Members in Mailinglist</tr></thead>
+      <div ng-if="ctrl.loadAddressBookDone">
+        <md-button  class="md-raised md-primary" id="sync-button" ng-click="ctrl.syncAddressBook()">
+	  Sync AddressBook
+        </md-button>
+	<md-progress-linear md-mode="determinate" ng-if="ctrl.syncCompletedGroups >= 0"
+                            value="{{(ctrl.syncCompletedGroups + 1) * 100 / ctrl.gropus.length}}"></md-progress-linear>
+      </div>
+      <table border="1">
+        <thead><tr><th>Name</th><th>Status</th><th>Email</th></tr></thead>
         <tbody>
           <tr ng-repeat="(email, group) in ctrl.groups">
             <td>{{ group.name }}</td>
             <td>
               <md-progress-circular ng-if="!ctrl.loadAddressBookDone" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>
               <div ng-if="ctrl.loadAddressBookDone">
+                <span ng-switch="group.status">
+                  <span ng-switch-when="1">INITIALIZING</span>
+                  <span ng-switch-when="2" style="color:green">SYNCED</span>
+                  <span ng-switch-when="3">MODIFIED</span>
+                  <span ng-switch-when="4" style="color:blue">NEW</span>
+                  <span ng-switch-when="5" style="color:red">DELETED</span>
+                  <span ng-switch-default>Uknown Status</span>
+                </span>
               </div>
             </td>
             <td>{{ group.email }}</td>
-            <td><md-progress-circular ng-if="!group.members" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>{{ group.members.length }}</td>
           </tr>
         </tbody>
       </table>
