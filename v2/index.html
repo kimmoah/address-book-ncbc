@@ -1,135 +1,33 @@
-<!doctype html>
-<html ng-app="SyncMailingList">
+<!DOCTYPE html>
+<html ng-app="SaenuriYoungModule">
   <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-      <title>Sync Mailing List</title>
+    <title>Google Sheets API Quickstart</title>
+    <meta charset='utf-8' />
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.js"></script>
 
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.css">
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-cookies.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-aria.min.js"></script>
-
-
-    <!-- Angular Material Javascript now available via Google CDN; version 0.11.2 used here -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.js"></script>
-
-
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.js"></script>
     <script src="app.js"></script>
-    <script type="text/javascript">
-      var CLIENT_ID = '666028720508-t7c4nrhsfctgg7uvjtldics8jl6nvra3.apps.googleusercontent.com';
 
-      var SCOPES = ['https://www.googleapis.com/auth/admin.directory.group https://www.googleapis.com/auth/spreadsheets'];
-
-      /**
-       * Check if current user has authorized this application.
-       */
-      function checkAuth() {
-        gapi.auth.authorize(
-          {
-            'client_id': CLIENT_ID,
-            'scope': SCOPES.join(' '),
-            'immediate': true
-          }, handleAuthResult);
-      }
-
-      function initializeApp() {
-        var $scope = angular.element('body').scope();
-
-        $scope.$apply(function(){
-          $scope.loadDirectoryApi();
-        })
-      }
-
-      /**
-       * Handle response from authorization server.
-       *
-       * @param {Object} authResult Authorization result.
-       */
-      function handleAuthResult(authResult) {
-        var authorizeDiv = document.getElementById('authorize-div');
-        if (authResult && !authResult.error) {
-          // Hide auth UI, then load client library.
-          authorizeDiv.style.display = 'none';
-          initializeApp();
-        } else {
-          // Show auth UI, allowing the user to initiate authorization by
-          // clicking authorize button.
-          authorizeDiv.style.display = 'inline';
-        }
-      }
-      function handleAuthClick(event) {
-        gapi.auth.authorize(
-          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-          handleAuthResult);
-        return false;
-      }
-
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <script src="https://apis.google.com/js/api.js"></script>
   </head>
-  <body layout="row" ng-controller="SyncMailingListCtrl as ctrl">
-    <div layout="column" layout-fill tabIndex="-1" role="main">
-      <md-toolbar>
-        <div class="md-toolbar-tools">
-	  <div>
-	    <span>Sync NCBC Mailing list</span>
-	  </div>
-	</div>
-      </md-toolbar>
-    <md-content ng-view md-scroll-xy flex class="md-padding">
-    <div id="authorize-div" style="display: none">
-<div layout="row" layout-align="center center">
-    <!--Button for the user to click to initiate auth sequence -->
-    <md-button  class="md-raised md-primary" id="authorize-button" onclick="handleAuthClick(event)">
-    Login
-    </md-button>
-</div>
-    </div>
-    <div ng-show="ctrl.login">
-      <div ng-if="!ctrl.groups">
-        Loading Groups: <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-      </div>
-      <div ng-if="!ctrl.loadAddressBookDone">
-        Loading AddressBook from Google Spreadsheet: <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-      </div>
-      <div ng-if="ctrl.loadAddressBookDone">
-        <md-button  class="md-raised md-primary" id="sync-button" ng-click="ctrl.syncAddressBook()">
-	  Sync AddressBook
-        </md-button>
-	<md-progress-linear md-mode="determinate" ng-if="ctrl.syncCompletedGroups >= 0"
-                            value="{{(ctrl.syncCompletedGroups + 1) * 100 / ctrl.gropus.length}}"></md-progress-linear>
-      </div>
-      <table border="1">
-        <thead><tr><th>Name</th><th>Status</th><th>Email</th></tr></thead>
-        <tbody>
-          <tr ng-repeat="(email, group) in ctrl.groups">
-            <td>{{ group.name }}</td>
-            <td>
-              <md-progress-circular ng-if="!ctrl.loadAddressBookDone" md-mode="indeterminate" md-diameter="20px"></md-progress-circular>
-              <div ng-if="ctrl.loadAddressBookDone">
-                <span ng-switch="group.status">
-                  <span ng-switch-when="1">INITIALIZING</span>
-                  <span ng-switch-when="2" style="color:green">SYNCED</span>
-                  <span ng-switch-when="3">MODIFIED</span>
-                  <span ng-switch-when="4" style="color:blue">NEW</span>
-                  <span ng-switch-when="5" style="color:red">DELETED</span>
-                  <span ng-switch-default>Uknown Status</span>
-                </span>
-              </div>
-            </td>
-            <td>{{ group.email }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    </md-content>
-    </div>
-    <pre id="output"></pre>
+  <body ng-controller="AddressBookController as ctrl">
+    <p>Google Sheets API Quickstart</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <md-button class="md-raised md-primary" ng-if="!ctrl.isSignedIn" ng-click="ctrl.handleAuthClick()">Sign In</md-button>
+    <md-button class="md-raised md-primary" ng-if="ctrl.isSignedIn" ng-click="ctrl.handleSignoutClick()">Sign Out</md-button>
+    <button id="authorize-button" style="display: none;">Authorize</button>
+    <button id="signout-button" style="display: none;">Sign Out</button>
+
+    <span>Num Values: {{ ctrl.range.values.length }}</span>
+    <span ng-repeat="row in ctrl.range.values">
+      {{ row[0] }}, {{ row[4] }}
+    </span>
   </body>
 </html>
-
