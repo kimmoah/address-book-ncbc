@@ -1,33 +1,31 @@
 <!DOCTYPE html>
 <html ng-app="SaenuriYoungModule">
   <head>
-    <title>Google Sheets API Quickstart</title>
+    <title>새누리 청년 공동체 목장 모임 리포트</title>
     <meta charset='utf-8' />
     <!-- Angular Material requires Angular.js Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
 
     <!-- Angular Material Library -->
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.js"></script>
+    <script src="login.js"></script>
     <script src="app.js"></script>
 
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+<script src="md-data-table.min.js"></script>
+    <link rel="stylesheet" href="md-data-table.min.css">
+
     <script src="https://apis.google.com/js/api.js"></script>
   </head>
-  <body ng-controller="AddressBookController as ctrl">
-    <p>Google Sheets API Quickstart</p>
-
+  <body ng-controller="TopPageController as topCtrl">
     <!--Add buttons to initiate auth sequence and sign out-->
-    <md-button class="md-raised md-primary" ng-if="!ctrl.isSignedIn" ng-click="ctrl.handleAuthClick()">Sign In</md-button>
-    <md-button class="md-raised md-primary" ng-if="ctrl.isSignedIn" ng-click="ctrl.handleSignoutClick()">Sign Out</md-button>
-    <button id="authorize-button" style="display: none;">Authorize</button>
-    <button id="signout-button" style="display: none;">Sign Out</button>
+    <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
+    <md-button class="md-raised md-primary" ng-if="topCtrl.isSignedIn()" ng-click="topCtrl.handleSignoutClick()">Sign Out</md-button>
 
-    <span>Num Values: {{ ctrl.range.values.length }}</span>
-    <span ng-repeat="row in ctrl.range.values">
-      {{ row[0] }}, {{ row[4] }}
-    </span>
+    <md-content ng-view md-scroll-xy flex class="md-padding"></md-content>
   </body>
 </html>

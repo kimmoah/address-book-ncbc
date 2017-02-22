@@ -1,0 +1,40 @@
+<h2 class="md-display-1">목장 리포트: {{ submitReportCtrl.name }}</h2>
+<form ng-submit="submitReportCtrl.submitReport()" ng-if="submitReportCtrl.memberData">
+    <md-button class="md-raised md-primary" type="submit" value="Submit">
+    제출
+    </md-button>
+  <table md-table>
+    <thead md-head>
+      <tr>
+        <th md-column>이름</th>
+        <th md-column>출석</th>
+    </thead>
+    <tbody md-body>
+      <tr ng-repeat="member in submitReportCtrl.memberData">
+        <td md-cell align="center">{{ member.name }}</td>
+        <td md-cell align="center">
+          <md-input-container>
+            <label>출석 상황</label>
+            <md-select ng-model="member.status">
+            <md-option ng-repeat="status in submitReportCtrl.memberStatus" ng-value="$index">
+              {{ status }}
+            </md-option>
+          </md-select>
+        </md-input-container>
+      </td>
+      <td md-cell align="left" layout="row" layout-align="center center" layout-fill flex>
+        <textarea ng-model="member.note" flex>
+      </td>
+      </tr>
+    </tbody>
+  </table>
+  <md-input-container flex>
+    <label>목장 노트</label>
+    <textarea ng-model="submitReportCtrl.groupNote">
+  </md-input-container>
+
+</form>
+<div ng-if="!submitReportCtrl.memberData">
+  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+

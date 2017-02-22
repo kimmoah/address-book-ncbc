@@ -1,0 +1,30 @@
+<div ng-if="addressBookCtrl.allGroupSheet">
+  <table md-table>
+    <thead md-head>
+      <tr>
+        <th md-column>목장 이름</th>
+        <th md-column>목자</th>
+        <th md-column>Email</th>
+        <th md-column>Report</th>
+      </tr>
+    </thead>
+    <tbody md-body>
+      <tr ng-repeat="group in addressBookCtrl.allGroupSheet.values">
+        <td md-cell align="center">{{ group[0] }}</td>
+        <td md-cell align="center">{{ group[2] }}</td>
+        <td md-cell align="center">{{ group[1] }}</td>
+        <td md-cell align="center">
+          <md-button class="md-raised md-primary" ng-if="group[3]"
+                     ng-href="{{ addressBookCtrl.getReportLink(group) }}">
+          목장 리포트
+          </md-button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div ng-if="!addressBookCtrl.allGroupSheet">
+  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+</div>
+
+
