@@ -403,6 +403,24 @@ SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', 'Auth
 SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', 'AuthService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
 
+// Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.
+SaenuriYoungModule.directive('elastic', [
+    '$timeout',
+    function($timeout) {
+        return {
+            restrict: 'A',
+            link: function($scope, element) {
+                $scope.initialHeight = $scope.initialHeight || element[0].style.height;
+                var resize = function() {
+                    element[0].style.height = $scope.initialHeight;
+                    element[0].style.height = "" + element[0].scrollHeight + "px";
+                };
+                element.on("input change", resize);
+                $timeout(resize, 0);
+            }
+        };
+    }
+]);
 // Router.
 SaenuriYoungModule.config(function($routeProvider) {
   var AuthServiceResolve = {

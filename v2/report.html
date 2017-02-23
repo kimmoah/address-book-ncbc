@@ -32,17 +32,17 @@
                 </md-input-container>
               </td>
               <td md-cell align="left" style="padding: 0 5px 0 0">
-                <textarea ng-model="member.prayer" layout-fill flex></textarea>
+                <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>
               </td>
               <td md-cell align="left" style="padding: 0 5px 0 0">
-                <textarea ng-model="member.note" layout-fill flex></textarea>
+                <textarea elastic ng-model="member.note" layout-fill flex></textarea>
               </td>
               </tr>
             </tbody>
           </table>
           <md-input-container>
             <label>목장 노트</label>
-            <textarea ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
+            <textarea elastic ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
           </md-input-container>
             <md-button class="md-raised md-primary" type="submit" value="Submit">
             저장 
@@ -55,7 +55,7 @@
       <md-tab-label>기도제목 복사</md-tab-label>
       <md-tab-body>
         <div ng-repeat="member in submitReportCtrl.memberData">
-          <span ng-if="member.prayer">
+          <span ng-if="member.prayer" style="word-wrap: break-word;">
             {{ member.name }} : {{ member.prayer }} <br />
           </span>
         </div>
