@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html ng-app="SaenuriYoungModule">
-  <head>
+  <head profile="http://www.w3.org/2005/10/profile">
     <title>새누리 청년 공동체 목장 모임 리포트</title>
     <meta charset='utf-8' />
     <meta name="viewport" content="width=device-width">
+    <link rel="icon"  type="image/png"  href="soar.png">
     <!-- Angular Material requires Angular.js Libraries -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
 
     <!-- Angular Material Library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
     <script src="login.js"></script>
     <script src="app.js"></script>
 
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
-<script src="md-data-table.min.js"></script>
+    <script src="md-data-table.min.js"></script>
     <link rel="stylesheet" href="md-data-table.min.css">
+
+    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script src="https://apis.google.com/js/api.js"></script>
   </head>
   <body ng-controller="TopPageController as topCtrl">
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
-    <md-button class="md-raised md-primary" ng-if="topCtrl.isSignedIn()" ng-click="topCtrl.handleSignoutClick()">Sign Out</md-button>
+    <div layout="row" layout-align="space-between center">
+      <div>
+        <a href="/#/"><img src="soar.png" width="32" height="32"></a>
+      </div>
+      <div><span class="md-headline">새누리 청년 공동체 목장 리포트</span></div>
+      <div>
+        <!--Add buttons to initiate auth sequence and sign out-->
+        <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
+        <md-button class="md-raised md-primary" ng-if="topCtrl.isSignedIn()" ng-click="topCtrl.handleSignoutClick()">Sign Out</md-button>
+      </div>
+    </div>
 
     <md-content ng-view md-scroll-xy flex class="md-padding"></md-content>
   </body>

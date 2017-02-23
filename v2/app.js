@@ -50,6 +50,23 @@ TopPageController.prototype.handleSignoutClick = function() {
   gapi.auth2.getAuthInstance().signOut();
 };
 
+GroupData = function(group) {
+  this.name = group[0];
+  this.leader = group[2];
+  this.reportSheetId = null;
+
+  if (group.length > 3) {
+    // Extract spreadsheet id from the link.
+    var spreadsheetAddress = group[3];
+    var ID_PATH = 'spreadsheets/d/';
+    var index = spreadsheetAddress.indexOf(ID_PATH);
+    if (index != -1) {
+      var idEnd = spreadsheetAddress.indexOf('/', index + ID_PATH.length);
+      this.reportSheetId = spreadsheetAddress.substring(index + ID_PATH.length, idEnd);
+    }
+  }
+};
+
 // Controller to list every groups.
 AddressBookController = function($scope, $mdDialog, AuthService) {
   // Store the injected services.
@@ -63,6 +80,8 @@ AddressBookController = function($scope, $mdDialog, AuthService) {
 
   // Sheet containing information of every group.
   this.allGroupSheet = null;
+
+  this.groupsOrder = 'name'
 
   // Be notified by the login status change.
   gapi.auth2.getAuthInstance().isSignedIn.listen(
@@ -126,22 +145,16 @@ AddressBookController.prototype.handleLoadingSheets = function(response) {
 
 // Handler when a sheet containing all groups is loaded.
 AddressBookController.prototype.handleLoadingAllGroups = function(response) {
-  this.allGroupSheet = response.result;
+  this.allGroupSheet = [];
+  for (var i = 0; i < response.result.values.length; ++i) {
+    this.allGroupSheet.push(new GroupData(response.result.values[i]));
+  }
   this.$scope.$apply();
 };
 
 // Returns a link of report for each group.
 AddressBookController.prototype.getReportLink = function(group) {
-  // Extract spreadsheet id from the link.
-  var spreadsheetAddress = group[3];
-  var ID_PATH = 'spreadsheets/d/';
-  var index = spreadsheetAddress.indexOf(ID_PATH)
-  if (index == -1) {
-    return '';
-  }
-  var idEnd = spreadsheetAddress.indexOf('/', index + ID_PATH.length);
-  var spreadSheetId = spreadsheetAddress.substring(index + ID_PATH.length, idEnd);
-  var link = '/#/report?name=' + group[0] + '&report_sheetid=' + spreadSheetId;
+  var link = '/#/report?name=' + group.name + '&report_sheetid=' + group.reportSheetId;
   return link;
 };
 
@@ -180,6 +193,9 @@ SubmitReportController = function($scope, $location, $mdDialog) {
   this.reportSpreadSheetId = search['report_sheetid'];
   this.memberData = null;
   this.groupNote = '';
+
+  this.groupsOrder = 'name'
+
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
     gapi.client.sheets.spreadsheets.values.get({

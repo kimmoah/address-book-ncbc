@@ -1,18 +1,18 @@
 <div ng-if="addressBookCtrl.allGroupSheet">
   <table md-table>
-    <thead md-head>
+    <thead md-head md-order="addressBookCtrl.groupsOrder">
       <tr>
-        <th md-column>목장 이름</th>
-        <th md-column>목자</th>
+        <th md-column md-order-by="name">목장 이름</th>
+        <th md-column md-order-by="leader">목자</th>
         <th md-column>Report</th>
       </tr>
     </thead>
     <tbody md-body>
-      <tr ng-repeat="group in addressBookCtrl.allGroupSheet.values">
-        <td md-cell align="center">{{ group[0] }}</td>
-        <td md-cell align="center">{{ group[2] }}</td>
+      <tr ng-repeat="group in addressBookCtrl.allGroupSheet | orderBy: addressBookCtrl.groupsOrder">
+        <td md-cell align="center">{{ group.name }}</td>
+        <td md-cell align="center">{{ group.leader }}</td>
         <td md-cell align="center">
-          <md-button class="md-raised md-primary" ng-if="group[3]"
+          <md-button class="md-raised md-primary" ng-if="group.reportSheetId"
                      ng-href="{{ addressBookCtrl.getReportLink(group) }}">
           목장 리포트
           </md-button>

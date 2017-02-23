@@ -1,15 +1,18 @@
-<h2 class="md-display-1">목장 리포트: {{ submitReportCtrl.name }}</h2>
+<div layout="row" layout-align="start center">
+  <h2 class="md-display-1">목장 리포트: {{ submitReportCtrl.name }}</h2>
+  <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png"></a>
+</div>
 <form ng-submit="submitReportCtrl.submitReport()" ng-if="submitReportCtrl.memberData">
   <div layout="column" layout-fill>
   <table md-table>
-    <thead md-head>
+    <thead md-head md-order="submitReportCtrl.groupsOrder">
       <tr>
-        <th md-column>이름</th>
-        <th md-column>출석</th>
+        <th md-column md-order-by="name">이름</th>
+        <th md-column md-order-by="status">출석</th>
       </tr>
     </thead>
     <tbody md-body>
-      <tr ng-repeat="member in submitReportCtrl.memberData">
+      <tr ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
         <td md-cell align="center">{{ member.name }}</td>
         <td md-cell align="center">
           <md-input-container>
