@@ -27,8 +27,9 @@
   </head>
   <body ng-controller="TopPageController as topCtrl">
     <div layout="row" layout-align="space-between center">
-      <div>
+      <div layout="row">
         <a href="/#/"><img src="soar.png" width="32" height="32"></a>
+        <a ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
       </div>
       <div><span class="md-headline">새누리 청년 공동체 목장 리포트</span></div>
       <div>

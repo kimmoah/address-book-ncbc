@@ -14,6 +14,7 @@ TopPageController = function($scope, $mdDialog, AuthService) {
   AuthService.promise.then(angular.bind(this, this.AuthServiceInitDone));
   this.AuthService = AuthService;
   this.isAuthServiceInitialized_ = false;
+  this.addressBookSpreadSheetId = ADDRESSBOOK_ID;
 };
 
 TopPageController.prototype.AuthServiceInitDone = function() {
@@ -98,7 +99,7 @@ AddressBookController.prototype.updateSigninStatus = function(isSignedIn) {
     // Does not need to load the sheet multiple times.
     if (!this.allGroupSheets) {
       gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: '1E11ya9JAGIrHKLdgZccxPpzWSbQzw6MFLXq7f6tOy-U'
+      spreadsheetId: ADDRESSBOOK_ID
     }).then(angular.bind(this, this.handleLoadingSheets));
     }
   } else {
