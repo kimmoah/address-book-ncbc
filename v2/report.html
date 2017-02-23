@@ -1,13 +1,12 @@
 <h2 class="md-display-1">목장 리포트: {{ submitReportCtrl.name }}</h2>
 <form ng-submit="submitReportCtrl.submitReport()" ng-if="submitReportCtrl.memberData">
-    <md-button class="md-raised md-primary" type="submit" value="Submit">
-    제출
-    </md-button>
+  <div layout="column" layout-fill>
   <table md-table>
     <thead md-head>
       <tr>
         <th md-column>이름</th>
         <th md-column>출석</th>
+      </tr>
     </thead>
     <tbody md-body>
       <tr ng-repeat="member in submitReportCtrl.memberData">
@@ -23,16 +22,19 @@
         </md-input-container>
       </td>
       <td md-cell align="left" layout="row" layout-align="center center" layout-fill flex>
-        <textarea ng-model="member.note" flex>
+        <textarea ng-model="member.note" flex></textarea>
       </td>
       </tr>
     </tbody>
   </table>
-  <md-input-container flex>
+  <md-input-container>
     <label>목장 노트</label>
-    <textarea ng-model="submitReportCtrl.groupNote">
+    <textarea ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
   </md-input-container>
-
+    <md-button class="md-raised md-primary" type="submit" value="Submit">
+    제출
+    </md-button>
+</div>
 </form>
 <div ng-if="!submitReportCtrl.memberData">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>

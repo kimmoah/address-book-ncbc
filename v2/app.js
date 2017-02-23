@@ -32,55 +32,31 @@ AddressBookController = function($scope, $mdDialog, AuthService) {
   this.$scope = $scope;
   this.$mdDialog = $mdDialog;
   this.isSignedIn = false;
+  this.AuthService = AuthService;
 
   this.sheets = null;
   this.allGroupSheet = null;
+
+  gapi.auth2.getAuthInstance().isSignedIn.listen(
+      angular.bind(this, this.UpdateSigninStatus));
+
   if (AuthService.isSignedIn) {
-    gapi.client.sheets.spreadsheets.get({
+    this.UpdateSigninStatus(true);
+  }
+};
+
+AddressBookController.prototype.UpdateSigninStatus = function(isSignedIn) {
+  console.log('AddressBookController.prototype.UpdateSigninStatus');
+  if (this.AuthService.isSignedIn) {
+    console.log(this.allGroupSheets);
+    if (!this.allGroupSheets) {
+      gapi.client.sheets.spreadsheets.get({
       spreadsheetId: '1E11ya9JAGIrHKLdgZccxPpzWSbQzw6MFLXq7f6tOy-U'
     }).then(angular.bind(this, this.handleLoadingSheets));
-}
-};
-
-AddressBookController.prototype.initClient = function() {
-  console.log('initClient');
-
-  var CLIENT_ID = '1031261625328-bti3hb1raq4jd0apfb8e1lu1udgl6a8p.apps.googleusercontent.com';
-
-  // Array of API discovery doc URLs for APIs used by the quickstart
-  var DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
-
-  // Authorization scopes required by the API; multiple scopes can be
-  // included, separated by spaces.
-  var SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-
-  var Self = this;
-  gapi.client.init({
-    discoveryDocs: DISCOVERY_DOCS,
-    clientId: CLIENT_ID,
-    scope: SCOPES
-    }).then(angular.bind(this, this.clientInit));
-};
-
-AddressBookController.prototype.clientInit = function() {
-	console.log(gapi.auth2.getAuthInstance());
-	// Listen for sign-in state changes.
-	gapi.auth2.getAuthInstance().isSignedIn.listen(angular.bind(this, this.updateSigninStatusCallback));
-	this.updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-};
-
-AddressBookController.prototype.updateSigninStatusCallback = function(isSignedIn) {
-  console.log('callback');
-  this.updateSigninStatus(isSignedIn);
-  this.$scope.$apply();
-};
-
-AddressBookController.prototype.updateSigninStatus = function(isSignedIn) {
-  console.log('Before: ' + this.isSignedIn);
-  this.isSignedIn = isSignedIn;
-  console.log('After: ' + this.isSignedIn);
-
-  if (this.isSignedIn && !this.sheets) {
+    }
+  } else {
+    this.allGroupSheet = null;
+    this.$scope.$apply();
   }
 };
 
@@ -156,8 +132,10 @@ MemberData.status = [
 MemberData.prototype.getReportArray = function() {
   var ret = [];
   ret.push(this.name);
-  ret.push(MemberData.status[this.status];
+  ret.push(MemberData.status[this.status]);
   ret.push(this.note);
+
+  return ret;
 };
 
 SubmitReportController = function($scope, $location, $mdDialog) {
@@ -190,11 +168,10 @@ SubmitReportController.prototype.handleLoadingGroup = function(response) {
 
 SubmitReportController.prototype.reportTitle = function() {
   var today = new Date();
-  return today.getFullYear() + '/' + today.getMonth() + '/' + today.getDate();
+  return today.getFullYear() + '/' + (today.getMonth()+1) + '/' + today.getDate();
 };
 
 SubmitReportController.prototype.submitReport = function(response) {
-  console.log('Submit!!');
   gapi.client.sheets.spreadsheets.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
     'requests': [{
@@ -206,17 +183,39 @@ SubmitReportController.prototype.submitReport = function(response) {
             'columnCount': 3
           }      } }
     }]
-  }).then(angular.bind(this, this.addReportSheet));
+  }).then(angular.bind(this, this.addReportSheet),
+          angular.bind(this, this.createSheetFail));
 };
 
+SubmitReportController.prototype.createSheetFail = function(response) {
+  var confirm = this.$mdDialog.confirm()
+      .title('중복된 리포트' )
+      .textContent('오늘 이미 리포트를 제출 하셨습니다. 덮으시겠습니까?')
+      .ariaLabel('Alert Dialog Demo')
+      .ok('넵!')
+      .cancel('취소하겠습니다');
+  var self = this;
+  this.$mdDialog.show(confirm).then(function() {
+    self.addReportSheet(null);
+    });
+};
+
+/**
+ * <response> maybe null;
+*/
 SubmitReportController.prototype.addReportSheet = function(response) {
   console.log(response);
   var range = this.reportTitle() + '!A1:C' + (this.memberData.length + 1);
 
   var values = [];
+  var groupNote = [];
+  groupNote.push('목장 노트');
+  groupNote.push(this.groupNote);
+  values.push(groupNote);
   for (var i = 0; i < this.memberData.length; ++i) {
     values.push(this.memberData[i].getReportArray());
   }
+  console.log(values);
   gapi.client.sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
     valueInputOption: 'RAW',

@@ -4,7 +4,6 @@
       <tr>
         <th md-column>목장 이름</th>
         <th md-column>목자</th>
-        <th md-column>Email</th>
         <th md-column>Report</th>
       </tr>
     </thead>
@@ -12,7 +11,6 @@
       <tr ng-repeat="group in addressBookCtrl.allGroupSheet.values">
         <td md-cell align="center">{{ group[0] }}</td>
         <td md-cell align="center">{{ group[2] }}</td>
-        <td md-cell align="center">{{ group[1] }}</td>
         <td md-cell align="center">
           <md-button class="md-raised md-primary" ng-if="group[3]"
                      ng-href="{{ addressBookCtrl.getReportLink(group) }}">
@@ -23,7 +21,7 @@
     </tbody>
   </table>
 </div>
-<div ng-if="!addressBookCtrl.allGroupSheet">
+<div ng-if="!addressBookCtrl.allGroupSheet && addressBookCtrl.AuthService.isSignedIn">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
 
