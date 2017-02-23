@@ -205,6 +205,9 @@ SubmitReportController = function($scope, $location, $mdDialog) {
 
   this.reportRangeCharacter = 'D';
 
+  // If true render, only Name and Prayer subject columns in the table.
+  this.prayerMode = false;
+
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
     gapi.client.sheets.spreadsheets.values.get({
@@ -413,7 +416,9 @@ SaenuriYoungModule.directive('elastic', [
                 $scope.initialHeight = $scope.initialHeight || element[0].style.height;
                 var resize = function() {
                     element[0].style.height = $scope.initialHeight;
-                    element[0].style.height = "" + element[0].scrollHeight + "px";
+                    if (element[0].scrollHeight > 0) {
+                      element[0].style.height = "" + element[0].scrollHeight + "px";
+                    }
                 };
                 element.on("input change", resize);
                 $timeout(resize, 0);

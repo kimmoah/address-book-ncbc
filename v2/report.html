@@ -3,6 +3,7 @@
   <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png" width="24px" height="24px"></a>
 </div>
 <div ng-if="submitReportCtrl.memberData && submitReportCtrl.storedReport">
+  <md-switch ng-model="submitReportCtrl.prayerMode">기도제목만 보기</md-switch>
   <md-tabs md-dynamic-height>
     <md-tab id="report">
       <md-tab-label>리포트 작성</md-tab-label>
@@ -13,15 +14,19 @@
             <thead md-head md-order="submitReportCtrl.groupsOrder">
               <tr>
                 <th md-column md-order-by="name">이름</th>
-                <th md-column md-order-by="status">출석</th>
+                <th md-column md-order-by="status"
+                    ng-show="!submitReportCtrl.prayerMode">출석</th>
                 <th md-column>기도제목</th>
-                <th md-column>특이사항</th>
+                <th md-column ng-show="!submitReportCtrl.prayerMode">
+                  메모 (결석 사유 및 특별한 일 등등...)
+                </th>
               </tr>
             </thead>
             <tbody md-body>
               <tr ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
                 <td md-cell align="center">{{ member.name }}</td>
-                <td md-cell align="center" style="padding: 0 5px 0 0">
+                <td md-cell ng-show="!submitReportCtrl.prayerMode" 
+                            align="center" style="padding: 0 5px 0 0">
                   <md-input-container>
                     <label>출석 상황</label>
                     <md-select ng-model="member.status">
@@ -34,7 +39,8 @@
               <td md-cell align="left" style="padding: 0 5px 0 0">
                 <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>
               </td>
-              <td md-cell align="left" style="padding: 0 5px 0 0">
+              <td md-cell ng-show="!submitReportCtrl.prayerMode"
+                          align="left" style="padding: 0 5px 0 0">
                 <textarea elastic ng-model="member.note" layout-fill flex></textarea>
               </td>
               </tr>
