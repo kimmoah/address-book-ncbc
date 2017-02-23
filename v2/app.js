@@ -161,6 +161,7 @@ AddressBookController.prototype.getReportLink = function(group) {
 MemberData = function(name) {
   this.name = name;
   this.status = 0;
+  this.prayer = '';
   this.note = '';
 };
 MemberData.status = [
@@ -174,6 +175,7 @@ MemberData.prototype.getReportArray = function() {
   var ret = [];
   ret.push(this.name);
   ret.push(MemberData.status[this.status]);
+  ret.push(this.prayer);
   ret.push(this.note);
 
   return ret;
@@ -192,9 +194,16 @@ SubmitReportController = function($scope, $location, $mdDialog) {
   this.name = search['name'];
   this.reportSpreadSheetId = search['report_sheetid'];
   this.memberData = null;
+
+  // Stored report, object. Key is the name, and value is MemberData.
+  // Empty Object means that there is no stored report.
+  this.storedReport = null;
+
   this.groupNote = '';
 
   this.groupsOrder = 'name'
+
+  this.reportRangeCharacter = 'D';
 
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
@@ -202,6 +211,15 @@ SubmitReportController = function($scope, $location, $mdDialog) {
       spreadsheetId: ADDRESSBOOK_ID,
       range: range
     }).then(angular.bind(this, this.handleLoadingGroup));
+
+    var reportRange =
+      this.reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
+    console.log(reportRange);
+    gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: this.reportSpreadSheetId,
+      range: reportRange
+    }).then(angular.bind(this, this.handleLoadingReport),
+      angular.bind(this, this.handleLoadingReportFailure));
   } else {
     this.$mdDialog.show(
         this.$mdDialog.alert()
@@ -220,17 +238,62 @@ SubmitReportController.prototype.handleLoadingGroup = function(response) {
   for (var i = 0; i < response.result.values.length; ++i) {
     this.memberData.push(new MemberData(response.result.values[i][0]));
   }
+  this.maybeMergeLoadedReport();
+  this.$scope.$apply();
+};
+
+SubmitReportController.prototype.handleLoadingReport = function(response) {
+  this.storedReport = {}
+  // The first row is the group note.
+  if (response.result.values.length > 1) {
+    this.groupNote = response.result.values[0][1];
+  }
+  for (var i = 1; i < response.result.values.length; ++i) {
+    var memberData = new MemberData(response.result.values[i][0]);
+    memberData.prayer = response.result.values[i][2];
+    memberData.note = response.result.values[i][3];
+    var statusIndex = MemberData.status.indexOf(response.result.values[i][1]);
+    if (statusIndex != -1) {
+      memberData.status = statusIndex;
+    }
+    this.storedReport[memberData.name] = memberData;
+  }
+  this.maybeMergeLoadedReport();
+  this.$scope.$apply();
+};
+
+SubmitReportController.prototype.maybeMergeLoadedReport = function() {
+  if (!this.memberData || !this.storedReport) {
+    return;
+  }
+  for (var i = 0; i <this.memberData.length; ++i) {
+    if (this.memberData[i].name in this.storedReport) {
+      // Use data in the loaded.
+      this.memberData[i] = this.storedReport[this.memberData[i].name];
+    }
+  }
+};
+
+SubmitReportController.prototype.handleLoadingReportFailure = function(response) {
+  this.storedReport = {};
   this.$scope.$apply();
 };
 
 // Title of the report, which will be the name of the sheet.
 SubmitReportController.prototype.reportTitle = function() {
   var today = new Date();
-  return today.getFullYear() + '/' + (today.getMonth()+1) + '/' + today.getDate();
+  var diff = today.getDate() - today.getDay();
+  var sunday = new Date(today.setDate(diff));
+  return sunday.getFullYear() + '/' + (sunday.getMonth()+1) + '/' + sunday.getDate();
 };
 
 // Submit the report.
 SubmitReportController.prototype.submitReport = function(response) {
+  // Do not need to create a sheet if it is already there.
+  if (Object.keys(this.storedReport).length > 0) {
+    this.addReportSheet();
+    return;
+  }
   // First, create the sheet.
   gapi.client.sheets.spreadsheets.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
@@ -240,7 +303,7 @@ SubmitReportController.prototype.submitReport = function(response) {
           'title': this.reportTitle(),
           'gridProperties': {
             'rowCount': this.memberData.length,
-            'columnCount': 3
+            'columnCount': 4
           }      } }
     }]
   }).then(angular.bind(this, this.addReportSheet),
@@ -275,8 +338,8 @@ SubmitReportController.prototype.createSheetFail = function(response) {
 /**
  * <response> maybe null;
 */
-SubmitReportController.prototype.addReportSheet = function(response) {
-  var range = this.reportTitle() + '!A1:C' + (this.memberData.length + 1);
+SubmitReportController.prototype.addReportSheet = function() {
+  var range = this.reportTitle() + '!A1:' + this.reportRangeCharacter + (this.memberData.length + 1);
 
   var values = [];
 
@@ -309,7 +372,7 @@ SubmitReportController.prototype.addReportSheetReponse = function(response) {
     valueInputOption: 'RAW',
     range: 'ReportLogs!A1:C1',
     values: [valueRow]
-  }).then(angular.bind(this, this.addReportLogs));
+  }).then(angular.bind(this, this.addReportLogsResponse));
 
   this.$mdDialog.show(
       this.$mdDialog.alert()
@@ -321,7 +384,7 @@ SubmitReportController.prototype.addReportSheetReponse = function(response) {
       );
 };
 
-SubmitReportController.prototype.addReportLogs = function(response) {
+SubmitReportController.prototype.addReportLogsResponse = function(response) {
 };
 
 SubmitReportController.prototype.addReportSheetFailure = function(response) {
