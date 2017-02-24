@@ -32,9 +32,11 @@
         <a ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
       </div>
       <div><span class="md-headline">새누리 청년 공동체 목장 리포트</span></div>
-      <div>
+      <div layout="row" layout-align="end center">
         <!--Add buttons to initiate auth sequence and sign out-->
         <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
+        <img ng-if="topCtrl.getUserImageUrl()" ng-src="{{topCtrl.getUserImageUrl()}}"
+             style="border-radius: 50%; height:32px" title="{{topCtrl.getUserTooltip()}}" />
         <md-button class="md-raised md-primary" ng-if="topCtrl.isSignedIn()" ng-click="topCtrl.handleSignoutClick()">Sign Out</md-button>
       </div>
     </div>

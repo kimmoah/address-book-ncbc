@@ -25,6 +25,29 @@ TopPageController.prototype.isSignedIn = function() {
   return this.isAuthServiceInitialized_ && this.AuthService.isSignedIn;
 };
 
+TopPageController.prototype.getUserEmail = function() {
+  if (!this.isSignedIn()) {
+    return '';
+  }
+  return gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail();
+};
+
+TopPageController.prototype.getUserImageUrl = function() {
+  if (!this.isSignedIn()) {
+    return '';
+  }
+  return gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getImageUrl();
+};
+
+TopPageController.prototype.getUserTooltip = function() {
+  if (!this.isSignedIn()) {
+    return '';
+  }
+  var basicProfile =
+    gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+  return basicProfile.getName() + ' (' + basicProfile.getEmail() + ')';
+};
+
 TopPageController.prototype.alertAuthIsNotReady_ = function() {
   this.$mdDialog.show(
       this.$mdDialog.alert()
