@@ -182,10 +182,12 @@ MemberData.prototype.getReportArray = function() {
   return ret;
 };
 
-SubmitReportController = function($scope, $location, $mdDialog) {
+SubmitReportController = function($scope, $location, $mdDialog, $window) {
   // Store the injected services.
   this.$scope = $scope;
   this.$mdDialog = $mdDialog;
+  this.$location = $location;
+  this.$window = $window;
 
   // To use from the template.
   this.memberStatus = MemberData.status;
@@ -279,8 +281,25 @@ SubmitReportController.prototype.maybeMergeLoadedReport = function() {
 };
 
 SubmitReportController.prototype.handleLoadingReportFailure = function(response) {
-  this.storedReport = {};
-  this.$scope.$apply();
+  if (response.status == 403) {
+    // Does not have permission to the doc.
+    var confirm = this.$mdDialog.confirm()
+      .title('리포트 접근 권한 오류' )
+      .textContent(this.name + ' 목장 리포트에 접근할 수 없습니다.')
+      .ariaLabel('Alert Dialog Demo')
+      .ok('권한 신청하러 이동하겠습니다.')
+      .cancel('취소하겠습니다');
+    var self = this;
+    this.$mdDialog.show(confirm).then(function() {
+      self.$window.location.href = 
+        'https://docs.google.com/spreadsheets/d/' + self.reportSpreadSheetId;
+      }, function() {
+      self.$location.url('/');
+      });
+  } else {
+    this.storedReport = {};
+    this.$scope.$apply();
+  }
 };
 
 // Title of the report, which will be the name of the sheet.
