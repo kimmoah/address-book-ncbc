@@ -182,23 +182,40 @@ AddressBookController.prototype.getReportLink = function(group) {
   return link;
 };
 
+MemberStatus = function(text, iconColor, materialIconClass, svgSrc) {
+  this.text = text;
+  this.iconColor = iconColor;
+  this.materialIconClass = materialIconClass;
+  this.svgSrc = svgSrc;
+};
+
 MemberData = function(name) {
   this.name = name;
   this.status = 0;
   this.prayer = '';
   this.note = '';
 };
+
 MemberData.status = [
-  '잘 모름',
-  '예배 및 목장 참석',
-  '예배만 참석',
-  '목장만 참석'
+  new MemberStatus('잘 모름', '#212121', 'help', ''),
+  new MemberStatus('모두 참석하지 않음', '#B71C1C', 'cancel', ''),
+  new MemberStatus('예배만 참석', '#00E676', '', 'church.svg'),
+  new MemberStatus('목장만 참석', '#FFEB3B', 'group_work', ''),
+  new MemberStatus('예배 및 목장 참석', '#0091EA', 'thumb_up', '')
 ];
+
+MemberData.prototype.statusIconColor = function(targetStatus) {
+  if (this.status != targetStatus) {
+    return {'color': '#9e9e9e'};
+  } else {
+    return {'color': MemberData.status[this.status].iconColor};
+  }
+};
 
 MemberData.prototype.getReportArray = function() {
   var ret = [];
   ret.push(this.name);
-  ret.push(MemberData.status[this.status]);
+  ret.push(MemberData.status[this.status].text);
   ret.push(this.prayer);
   ret.push(this.note);
 
@@ -273,6 +290,9 @@ SubmitReportController.prototype.handleLoadingGroup = function(response) {
 
 SubmitReportController.prototype.handleLoadingReport = function(response) {
   this.storedReport = {}
+  if (!response.result.values) {
+    return;
+  }
   // The first row is the group note.
   if (response.result.values.length > 1) {
     this.groupNote = response.result.values[0][1];
@@ -348,12 +368,46 @@ SubmitReportController.prototype.submitReport = function(response) {
         'properties': {
           'title': this.reportTitle(),
           'gridProperties': {
-            'rowCount': this.memberData.length,
+            'rowCount': 100,  // give enough number.
+            'frozenRowCount': 1,
             'columnCount': 4
           }      } }
     }]
-  }).then(angular.bind(this, this.addReportSheet),
+  }).then(angular.bind(this, this.createSheetSucess),
           angular.bind(this, this.createSheetFail));
+};
+
+SubmitReportController.prototype.createSheetSucess = function(response) {
+/*
+  var gridRange = {
+    'sheetId': response.result.replies[0].addSheet.properties.sheetId,
+    'startRowIndex': 1,
+    'endRowIndex': 100,
+    'startColumnIndex': 1,
+    'endColumnIndex': 1,
+  };
+  var values = [];
+  for (var i = 0; i < MemberData.status.length; ++i) {
+    values.push({'userEnteredValue': MemberData.status[i]});
+  }
+  gapi.client.sheets.spreadsheets.batchUpdate({
+    spreadsheetId: this.reportSpreadSheetId,
+    'requests': [{
+      'setDataValidation': {
+        'range': gridRange,
+        'rule': {
+          'condition': {
+            'type': ConditionType.TEXT_EQ,
+            'values': values
+          }
+        }
+      }
+    }]
+  }).then(angular.bind(this, this.addReportSheet),
+    angular.bind(this, this.addReportSheet));
+*/
+
+  this.addReportSheet();
 };
 
 // When failed, just assume that there is the same spreadsheet.
@@ -385,18 +439,27 @@ SubmitReportController.prototype.createSheetFail = function(response) {
  * <response> maybe null;
 */
 SubmitReportController.prototype.addReportSheet = function() {
-  var range = this.reportTitle() + '!A1:' + this.reportRangeCharacter + (this.memberData.length + 1);
-
   var values = [];
+
+  var headRow = [];
+  headRow.push('이름');
+  headRow.push('출석');
+  headRow.push('기도제목');
+  headRow.push('메모');
+  values.push(headRow);
 
   var groupNote = [];
   groupNote.push('목장 노트');
+  groupNote.push('N/A');
+  groupNote.push('N/A');
   groupNote.push(this.groupNote);
 
   values.push(groupNote);
   for (var i = 0; i < this.memberData.length; ++i) {
     values.push(this.memberData[i].getReportArray());
   }
+
+  var range = this.reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
   gapi.client.sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
     valueInputOption: 'RAW',
@@ -406,6 +469,7 @@ SubmitReportController.prototype.addReportSheet = function() {
     }] 
   }).then(angular.bind(this, this.addReportSheetReponse),
     angular.bind(this, this.addReportSheetFailure));
+
 };
 
 SubmitReportController.prototype.addReportSheetReponse = function(response) {
@@ -424,7 +488,7 @@ SubmitReportController.prototype.addReportSheetReponse = function(response) {
       this.$mdDialog.alert()
       .clickOutsideToClose(true)
       .title('성공')
-      .textContent('목장 리포트를 성공적으로 제출하였습니다!')
+      .textContent('목장 리포트를 성공적으로 저장하였습니다!')
       .ariaLabel('Result of submitting report')
       .ok('Got it!')
       );

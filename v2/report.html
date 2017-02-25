@@ -31,7 +31,7 @@
                     <label>출석 상황</label>
                     <md-select ng-model="member.status">
                     <md-option ng-repeat="status in submitReportCtrl.memberStatus" ng-value="$index">
-                      {{ status }}
+                      {{ status.text }}
                     </md-option>
                   </md-select>
                 </md-input-container>
@@ -57,6 +57,30 @@
         </form>
       </md-tab-body>
     </md-tab>
+    <md-tab id="attendance">
+      <md-tab-label>출석</md-tab-label>
+      <md-tab-body>
+        <table md-table>
+          <thead md-head md-order="submitReportCtrl.groupsOrder">
+            <tr>
+              <th md-column md-order-by="name">이름</th>
+              <th md-column ng-repeat="status in submitReportCtrl.memberStatus">
+                {{ status.text }}
+              </th>
+            </tr>
+          </thead>
+          <tbody md-body>
+            <tr ng-repeat="member in submitReportCtrl.memberData">
+              <td md-cell align="center">{{ member.name }}</td>
+              <td md-cell align="center" ng-repeat="status in submitReportCtrl.memberStatus">
+                <md-icon ng-if="status.materialIconClass" class="material-icons" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
+                <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)"></md-icon>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </md-tab-body>
+   </md-tab>
     <md-tab id="prayer">
       <md-tab-label>기도제목 복사</md-tab-label>
       <md-tab-body>
