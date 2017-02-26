@@ -335,7 +335,7 @@ SubmitReportController.prototype.handleLoadingReportFailure = function(response)
       .title('리포트 접근 권한 오류' )
       .textContent(this.name + ' 목장 리포트에 접근할 수 없습니다.')
       .ariaLabel('Alert Dialog Demo')
-      .ok('권한 신청하러 이동하겠습니다.')
+      .ok('권한 신청하겠습니다.')
       .cancel('취소하겠습니다');
     var self = this;
     this.$mdDialog.show(confirm).then(function() {
