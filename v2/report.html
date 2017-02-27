@@ -18,10 +18,10 @@
              <md-list>
 <md-list-item>
 <p>출석</p>
-              <div ng-repeat="status in submitReportCtrl.memberStatus">
+              <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status">
                 <md-icon ng-if="status.materialIconClass" class="material-icons" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
                 <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)"></md-icon>
-              </div>
+              </md-button>
 </md-list-item>
 <md-list-item>
 <md-input-container style="width: 100%">
@@ -52,10 +52,10 @@
         <md-list>
           <md-list-item ng-repeat="member in submitReportCtrl.memberData">
             <p>{{member.name}}</p>
-            <div ng-repeat="status in submitReportCtrl.memberStatus">
+            <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status">
               <md-icon ng-if="status.materialIconClass" class="material-icons" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
               <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)"></md-icon>
-            </div>
+            </md-button>
           </md-list-item>
         </md-list>
       </md-tab-body>
