@@ -248,9 +248,6 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
 
   this.reportRangeCharacter = 'D';
 
-  // If true render, only Name and Prayer subject columns in the table.
-  this.prayerMode = false;
-
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
     gapi.client.sheets.spreadsheets.values.get({
