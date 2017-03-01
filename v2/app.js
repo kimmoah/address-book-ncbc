@@ -1,5 +1,5 @@
 // Define the main module.
-SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name]);
+SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name, 'ngclipboard']);
 
 // The Google Spreadsheet ID that contains the address book of NCBC Young Adults.
 var ADDRESSBOOK_ID = '1E11ya9JAGIrHKLdgZccxPpzWSbQzw6MFLXq7f6tOy-U';
@@ -260,6 +260,11 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   this.groupsOrder = 'name'
 
   this.reportRangeCharacter = 'D';
+
+  // For the sharing prayer dialog.
+  this.prayerList = '';
+
+  this.selectedTabIndex = 0;
 
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
@@ -522,6 +527,44 @@ SubmitReportController.prototype.addReportSheetFailure = function(response) {
       .ok('Oops!')
       );
 };
+
+SubmitReportController.prototype.sharePrayer = function() {
+  this.prayerList = '';
+  for (var i = 0; i < this.memberData.length; ++i) {
+    var member = this.memberData[i];
+    if (member.prayer) {
+      this.prayerList += member.name + ': ' + member.prayer + '\n';
+    }
+  }
+  if (this.prayerList) {
+    var self = this;
+    this.$mdDialog.show({
+      controller: function() { return self; },
+      controllerAs: 'ctrl',
+      templateUrl: 'share_prayer.html',
+      parent: angular.element(document.body),
+      clickOutsideToClose:true
+    })
+    .then(function() {
+    }, function() {
+    });
+  } else {
+    this.$mdDialog.show(
+        this.$mdDialog.alert()
+        .clickOutsideToClose(true)
+        .title('기도 제목 공유')
+        .textContent('멤버들의 기도제목이 하나도 없습니다')
+        .ariaLabel('Result of submitting report')
+        .ok('닫기')
+        );
+  }
+
+};
+
+SubmitReportController.prototype.cancelPrayerList = function() {
+  this.$mdDialog.cancel();
+};
+
 
 // Register controllers.
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);

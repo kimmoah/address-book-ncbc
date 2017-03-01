@@ -14,7 +14,12 @@
   </div>
 </md-toolbar>
 <div ng-if="submitReportCtrl.memberData && submitReportCtrl.storedReport">
-  <md-tabs md-dynamic-height class="md-primary">
+  <md-button ng-show="submitReportCtrl.selectedTabIndex == 2" class="md-fab md-fab-bottom-right" aria-label="Share prayer"
+             ng-click="submitReportCtrl.sharePrayer()" style="position: fixed !important;">
+    <md-icon ngclass="material-icons">share</md-icon>
+  </md-button>
+  <md-tabs md-dynamic-height class="md-primary"
+           md-selected="submitReportCtrl.selectedTabIndex">
     <md-tab id="report">
       <md-tab-label>리포트 작성</md-tab-label>
       <md-tab-body>
@@ -112,19 +117,6 @@
             </tr>
           </tbody>
         </table>
-        </md-card-content></md-card>
-      </md-tab-body>
-    </md-tab>
-    <md-tab id="prayer">
-      <md-tab-label>기도 제목 공유</md-tab-label>
-      <md-tab-body>
-      <md-card><md-card-content>
-      <md-subheader class="md-primary">기도 제목 공유</md-subheader>
-        <div ng-repeat="member in submitReportCtrl.memberData">
-          <span ng-if="member.prayer" style="word-wrap: break-word;">
-            {{ member.name }} : {{ member.prayer }} <br />
-          </span>
-        </div>
         </md-card-content></md-card>
       </md-tab-body>
     </md-tab>
