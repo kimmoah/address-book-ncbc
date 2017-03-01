@@ -1,12 +1,33 @@
-<div layout="row" layout-align="start center">
-  <h2 class="md-headline">{{ submitReportCtrl.name }} 목장 리포트 : {{ submitReportCtrl.reportTitle() }}</h2>
-  <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png" width="24px" height="24px"></a>
-</div>
+<md-toolbar class="md-toolbar-tools">
+  <div layout="row" flex class="fill-height" layout-align="space-between center">
+    <div>
+      <md-button class="md-icon-button" href="/#/">
+        <md-icon class="material-icons" aria-label="Back">arrow_back</md-icon>
+      </md-button>
+      <span>{{ submitReportCtrl.name }} 목장 리포트</span>
+    </div>
+    <div>
+      <md-button class="md-icon-button" ng-click="submitReportCtrl.submitReport()">
+        <md-icon class="material-icons" aria-label="Save">save</md-icon>
+      </md-button>
+    </div>
+  </div>
+</md-toolbar>
 <div ng-if="submitReportCtrl.memberData && submitReportCtrl.storedReport">
-  <md-tabs md-dynamic-height>
+  <md-tabs md-dynamic-height class="md-primary">
     <md-tab id="report">
       <md-tab-label>리포트 작성</md-tab-label>
       <md-tab-body>
+        <md-card>
+          <md-card-title>
+             <md-card-title-text>
+               <div layout="row">
+                 <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
+                 <span class="md-headline">{{ submitReportCtrl.name }} 목장 리포트 : {{ submitReportCtrl.reportTitle() }}</span>
+               </div>
+             </md-card-title-text>
+           </md-card-title>
+        </md-card>
          <md-card ng-repeat="member in submitReportCtrl.memberData">
            <md-card-title>
              <md-card-title-text>
@@ -15,39 +36,49 @@
            </md-card-title>
            <md-card-content>
              <md-list>
-<md-list-item>
-<p>출석</p>
-              <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status">
-                <md-icon ng-if="status.materialIconClass" class="material-icons" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
-                <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)"></md-icon>
-              </md-button>
-</md-list-item>
-<md-list-item>
-<md-input-container style="width: 100%">
-<label>기도 제목</label>
-                <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>
-</md-input-container>
-</md-list-item>
-<md-list-item>
-<md-input-container style="width: 100%">
-<label>메모 (결석 사유 및 특별한 일 등등...)</label>
-                <textarea elastic ng-model="member.note" layout-fill flex></textarea>
-</md-input-container>
-</md-list-item>
-
+               <md-list-item>
+                 <p>출석</p>
+                 <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status">
+                   <md-icon ng-if="status.materialIconClass" class="material-icons" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
+                   <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" ng-click="member.status = $index" aria-label="Send Email" ng-style="member.statusIconColor($index)"></md-icon>
+                 </md-button>
+               </md-list-item>
+               <md-list-item>
+                 <md-input-container style="width: 100%">
+                   <label>기도 제목</label>
+                   <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>
+                 </md-input-container>
+               </md-list-item>
+               <md-list-item>
+                 <md-input-container style="width: 100%">
+                   <label>메모 (결석 사유 및 특별한 일 등등...)</label>
+                     <textarea elastic ng-model="member.note" layout-fill flex></textarea>
+                 </md-input-container>
+               </md-list-item>
            </md-card-content>
          </md-card>
-          <div layout="column" layout-fill>
-          <md-input-container>
-            <label>목장 노트</label>
-            <textarea elastic ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
-          </md-input-container>
-          </div>
+         <md-card>
+          <md-card-title>
+            <md-card-title-text>
+              <span class="md-headline">목장 전체 노트</span>
+            </md-card-title-text>
+          </md-card-title>
+          <md-card-content>
+<div layout="column" layout-fill>
+            <md-input-container flex>
+              <label>목장 노트</label>
+              <textarea elastic ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
+            </md-input-container>
+</div>
+           </md-card-content>
+         </md-card>
       </md-tab-body>
     </md-tab>
     <md-tab id="attendance">
       <md-tab-label>출석</md-tab-label>
       <md-tab-body>
+      <md-card><md-card-content>
+      <md-subheader class="md-primary">출석</md-subheader>
         <md-list>
           <md-list-item ng-repeat="member in submitReportCtrl.memberData">
             <p>{{member.name}}</p>
@@ -57,11 +88,14 @@
             </md-button>
           </md-list-item>
         </md-list>
+</md-card-content></md-card>
       </md-tab-body>
    </md-tab>
     <md-tab id="prayer">
       <md-tab-label>기도제목</md-tab-label>
       <md-tab-body>
+<md-card><md-card-content>
+      <md-subheader class="md-primary">기도제목</md-subheader>
         <table md-table>
           <thead md-head md-order="submitReportCtrl.groupsOrder">
             <tr>
@@ -78,21 +112,27 @@
             </tr>
           </tbody>
         </table>
+        </md-card-content></md-card>
       </md-tab-body>
     </md-tab>
     <md-tab id="prayer">
-      <md-tab-label>기도제목 공유</md-tab-label>
+      <md-tab-label>기도 제목 공유</md-tab-label>
       <md-tab-body>
+      <md-card><md-card-content>
+      <md-subheader class="md-primary">기도 제목 공유</md-subheader>
         <div ng-repeat="member in submitReportCtrl.memberData">
           <span ng-if="member.prayer" style="word-wrap: break-word;">
             {{ member.name }} : {{ member.prayer }} <br />
           </span>
         </div>
+        </md-card-content></md-card>
       </md-tab-body>
     </md-tab>
     <md-tab id="memo">
       <md-tab-label>메모 (결석 사유 및 특별한 일 등등...)</md-tab-label>
       <md-tab-body>
+      <md-card><md-card-content>
+      <md-subheader class="md-primary">메모 (결석 사유 및 특별한 일 등등...)</md-subheader>
         <table md-table>
           <thead md-head md-order="submitReportCtrl.groupsOrder">
             <tr>
@@ -109,14 +149,10 @@
             </tr>
           </tbody>
         </table>
+        </md-card-content></md-card>
       </md-tab-body>
     </md-tab>
   </md-tabs>
-  <div layout=column layout-fill>
-    <md-button class="md-raised md-primary" type="submit" ng-click="submitReportCtrl.submitReport()" flex>
-    저장 
-    </md-button>
-  </div>
 </div>
 <div ng-if="!submitReportCtrl.memberData || !submitReportCtrl.storedReport">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>

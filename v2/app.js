@@ -5,9 +5,10 @@ SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute
 var ADDRESSBOOK_ID = '1E11ya9JAGIrHKLdgZccxPpzWSbQzw6MFLXq7f6tOy-U';
 
 // Contraoller for the top page.
-TopPageController = function($scope, $mdDialog, AuthService) {
+TopPageController = function($scope, $mdDialog, $location, AuthService) {
   this.$scope = $scope;
   this.$mdDialog = $mdDialog;
+  this.$location_ = $location;
 
   // TopPageController is created before the service is resolved by router,
   // need to be notified by it.
@@ -15,6 +16,12 @@ TopPageController = function($scope, $mdDialog, AuthService) {
   this.AuthService = AuthService;
   this.isAuthServiceInitialized_ = false;
   this.addressBookSpreadSheetId = ADDRESSBOOK_ID;
+};
+
+TopPageController.prototype.getReportGroupName = function() {
+  var search = this.$location_.search();
+
+  return search['name'];
 };
 
 TopPageController.prototype.AuthServiceInitDone = function() {
@@ -92,10 +99,11 @@ GroupData = function(group) {
 };
 
 // Controller to list every groups.
-AddressBookController = function($scope, $mdDialog, AuthService) {
+AddressBookController = function($scope, $mdDialog, $mdMenu, AuthService) {
   // Store the injected services.
   this.$scope = $scope;
   this.$mdDialog = $mdDialog;
+  this.$mdMenu = $mdMenu;
   this.AuthService = AuthService;
 
   // The Google Spreadsheets with the address book. This contains information of
@@ -180,6 +188,11 @@ AddressBookController.prototype.handleLoadingAllGroups = function(response) {
 AddressBookController.prototype.getReportLink = function(group) {
   var link = '/#/report?name=' + group.name + '&report_sheetid=' + group.reportSheetId;
   return link;
+};
+
+AddressBookController.prototype.openMenu = function($mdMenu, ev) {
+console.log(this.$mdMenu);
+  this.$mdMenu.open(ev);
 };
 
 MemberStatus = function(text, iconColor, materialIconClass, svgSrc) {
@@ -511,8 +524,8 @@ SubmitReportController.prototype.addReportSheetFailure = function(response) {
 };
 
 // Register controllers.
-SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', 'AuthService', TopPageController]);
-SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', 'AuthService', AddressBookController]);
+SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
+SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'AuthService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
 
 // Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.

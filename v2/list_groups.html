@@ -1,4 +1,39 @@
+<md-toolbar class="md-toolbar-tools md-whiteframe-z2" ng-show="topCtrl.isSignedIn()">
+  <div layout="row" flex class="fill-height" layout-align="space-between center">
+    <span>새누리 청년 공동체 목장 리포트</span>
+    <div layout="row" layout-align="center center">
+      <md-menu>
+        <md-button aria-label="Open login menu" class="md-icon-button" ng-click="$mdOpenMenu()">
+          <img ng-src="{{topCtrl.getUserImageUrl()}}"
+                 style="border-radius: 50%; height:32px"/>
+        </md-button>
+        <md-menu-content>
+        <md-menu-item>
+          <md-button disabled="disabled">
+          {{topCtrl.getUserTooltip()}}</md-button>
+        </md-menu-item>
+        <md-menu-item>
+          <md-button ng-click="topCtrl.handleSignoutClick()">
+            Sign Out
+          </md-button>
+        </md-menu-item>
+        </md-menu-content>
+    </div>
+  </div>
+</md-toolbar>
 <div ng-if="addressBookCtrl.allGroupSheet">
+  <md-card>
+    <md-card-title>
+       <md-card-title-text>
+         <div layout="row">
+           <a ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
+           <span class="md-headline">새누리 청년 공동체 주소록</span>
+         </div>
+       </md-card-title-text>
+     </md-card-title>
+  </md-card>
+<md-card>
+  <md-subheader class="md-no-sticky md-primary">리포트</md-subheader>
   <table md-table>
     <thead md-head md-order="addressBookCtrl.groupsOrder">
       <tr>
@@ -21,6 +56,7 @@
     </tbody>
   </table>
 </div>
+</md-card>
 <div ng-if="!addressBookCtrl.allGroupSheet && addressBookCtrl.AuthService.isSignedIn">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
