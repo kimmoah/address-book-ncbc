@@ -11,7 +11,10 @@
 
   <md-dialog-content>
     <div class="md-dialog-content">
-    <textarea elastic style="width: 250px; border: none;" id="sharing_prayer" readonly>{{ ctrl.prayerList }}</textarea>
+      <md-input-container class="md-block">
+        <label>멤버 기도 제목들</label>
+        <textarea elastic style="width: 250px;" id="sharing_prayer" readonly>{{ ctrl.prayerList }}</textarea>
+      </md-input-container>
     </div>
   </md-dialog-content>
 
