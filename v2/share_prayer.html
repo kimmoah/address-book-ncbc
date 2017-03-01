@@ -1,0 +1,26 @@
+<md-dialog aria-label="Sharing Prayer">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>기도 제목 공유</h2>
+      <span flex></span>
+      <md-button class="md-icon-button" ng-click="ctrl.cancelPrayerList()">
+        <md-icon class="material-icons" aria-label="Save">cancel</md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <md-dialog-content>
+    <div class="md-dialog-content">
+    <textarea elastic style="width: 250px; border: none;" id="sharing_prayer" readonly>{{ ctrl.prayerList }}</textarea>
+    </div>
+  </md-dialog-content>
+
+  <md-dialog-actions layout="row">
+    <md-button ng-click="ctrl.cancelPrayerList()">
+      닫기
+    </md-button>
+    <md-button ngclipboard data-clipboard-target="#sharing_prayer">
+      클립보드에 복사
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>
