@@ -104,13 +104,13 @@
       <md-subheader class="md-primary">기도 제목</md-subheader>
         <table md-table>
           <thead md-head md-order="submitReportCtrl.groupsOrder">
-            <tr>
+            <tr md-row>
               <th md-column md-order-by="name">이름</th>
               <th md-column>기도 제목</th>
             </tr>
           </thead>
           <tbody md-body>
-            <tr ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
+            <tr md-row ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
               <td md-cell align="center">{{ member.name }}</td>
             <td md-cell align="left" style="padding: 0 5px 0 0">
               <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>

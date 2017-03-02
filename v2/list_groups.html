@@ -1,4 +1,4 @@
-<md-toolbar class="md-toolbar-tools md-whiteframe-z2" ng-show="topCtrl.isSignedIn()">
+<md-toolbar class="md-toolbar-tools" ng-show="topCtrl.isSignedIn()">
   <div layout="row" flex class="fill-height" layout-align="space-between center">
     <span>새누리 청년 공동체 목장 리포트</span>
     <div layout="row" layout-align="center center">
@@ -27,8 +27,11 @@
     <md-card-title>
        <md-card-title-text>
          <div layout="row">
-           <a ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
-           <span class="md-headline">새누리 청년 공동체 주소록</span>
+           <md-button class="md-icon-button"
+                      ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}">
+             <img src="logo_sheets_32px.png" width="32px" height="32px"></a>
+           </md-button>
+           <span class="md-subhead">새누리 청년 공동체 주소록</span>
          </div>
        </md-card-title-text>
      </md-card-title>
@@ -37,14 +40,14 @@
   <md-subheader class="md-no-sticky md-primary">리포트</md-subheader>
   <table md-table>
     <thead md-head md-order="addressBookCtrl.groupsOrder">
-      <tr>
+      <tr md-row>
         <th md-column md-order-by="name">목장 이름</th>
         <th md-column md-order-by="leader">목자</th>
         <th md-column>Report</th>
       </tr>
     </thead>
     <tbody md-body>
-      <tr ng-repeat="group in addressBookCtrl.allGroupSheet | orderBy: addressBookCtrl.groupsOrder">
+      <tr md-row ng-repeat="group in addressBookCtrl.allGroupSheet | orderBy: addressBookCtrl.groupsOrder">
         <td md-cell align="center">{{ group.name }}</td>
         <td md-cell align="center">{{ group.leader }}</td>
         <td md-cell align="center">
