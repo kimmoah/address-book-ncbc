@@ -21,6 +21,7 @@
     </div>
   </div>
 </md-toolbar>
+<md-content>
 <div ng-if="addressBookCtrl.allGroupSheet">
   <md-card>
     <md-card-title>
@@ -60,5 +61,4 @@
 <div ng-if="!addressBookCtrl.allGroupSheet && addressBookCtrl.AuthService.isSignedIn">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
-
-
+</md-content>

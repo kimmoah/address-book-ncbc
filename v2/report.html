@@ -13,7 +13,8 @@
     </div>
   </div>
 </md-toolbar>
-<div ng-if="submitReportCtrl.memberData && submitReportCtrl.storedReport">
+<md-content>
+<div ng-if="submitReportCtrl.memberData && submitReportCtrl.storedReport" flex>
   <md-button ng-show="submitReportCtrl.selectedTabIndex == 2" class="md-fab md-fab-bottom-right" aria-label="Share prayer"
              ng-click="submitReportCtrl.sharePrayer()" style="position: fixed !important;">
     <md-icon ngclass="material-icons">share</md-icon>
@@ -149,4 +150,5 @@
 <div ng-if="!submitReportCtrl.memberData || !submitReportCtrl.storedReport">
   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
 </div>
+</md-content>
 

@@ -28,9 +28,9 @@
 
     <script src="https://apis.google.com/js/api.js"></script>
   </head>
-  <body ng-controller="TopPageController as topCtrl">
+  <body ng-controller="TopPageController as topCtrl" layout="column">
   <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
 
-    <md-content ng-view md-scroll-xy flex></md-content>
+    <md-content ng-view flex layout="column"></md-content>
   </body>
 </html>
