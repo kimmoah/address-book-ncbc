@@ -128,13 +128,13 @@
       <md-subheader class="md-primary">메모 (결석 사유 및 특별한 일 등등...)</md-subheader>
         <table md-table>
           <thead md-head md-order="submitReportCtrl.groupsOrder">
-            <tr>
+            <tr md-row>
               <th md-column md-order-by="name">이름</th>
               <th md-column>메모</th>
             </tr>
           </thead>
           <tbody md-body>
-            <tr ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
+            <tr md-row ng-repeat="member in submitReportCtrl.memberData | orderBy: submitReportCtrl.groupsOrder">
               <td md-cell align="center">{{ member.name }}</td>
             <td md-cell align="left" style="padding: 0 5px 0 0">
               <textarea elastic ng-model="member.note" layout-fill flex></textarea>
