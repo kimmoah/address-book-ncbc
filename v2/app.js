@@ -271,7 +271,8 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: ADDRESSBOOK_ID,
       range: range
-    }).then(angular.bind(this, this.handleLoadingGroup));
+    }).then(angular.bind(this, this.handleLoadingGroup),
+      angular.bind(this, this.handleLoadingGroupFailure));
 
     var reportRange =
       this.reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
@@ -306,6 +307,18 @@ SubmitReportController.prototype.handleLoadingGroup = function(response) {
       });
   this.maybeMergeLoadedReport();
   this.$scope.$apply();
+};
+
+SubmitReportController.prototype.handleLoadingGroupFailure = function(response) {
+  this.$mdDialog.show(
+    this.$mdDialog.alert()
+    .clickOutsideToClose(true)
+    .title('주소록 오류')
+    .textContent('"' + this.name + '" 목장 주소록을 찾을 수 없습니다.')
+    .ariaLabel('Failed to read addressbook.')
+    .ok('닫기')
+    );
+  this.$location.url('/');
 };
 
 SubmitReportController.prototype.handleLoadingReport = function(response) {
