@@ -52,7 +52,7 @@
         <td md-cell align="center">{{ group.leader }}</td>
         <td md-cell align="center">
           <md-button class="md-raised md-primary" ng-if="group.reportSheetId"
-                     ng-href="{{ addressBookCtrl.getReportLink(group) }}">
+                     ng-href="{{ group.getReportLink() }}">
           목장 리포트
           </md-button>
         </td>

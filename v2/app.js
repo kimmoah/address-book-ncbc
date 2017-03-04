@@ -1,8 +1,6 @@
 // Define the main module.
-SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name, 'ngclipboard']);
+SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name, GroupsServiceModule.name, 'ngclipboard']);
 
-// The Google Spreadsheet ID that contains the address book of NCBC Young Adults.
-var ADDRESSBOOK_ID = '1E11ya9JAGIrHKLdgZccxPpzWSbQzw6MFLXq7f6tOy-U';
 
 // Contraoller for the top page.
 TopPageController = function($scope, $mdDialog, $location, AuthService) {
@@ -81,113 +79,24 @@ TopPageController.prototype.handleSignoutClick = function() {
   gapi.auth2.getAuthInstance().signOut();
 };
 
-GroupData = function(group) {
-  this.name = group[0];
-  this.leader = group[2];
-  this.reportSheetId = null;
-
-  if (group.length > 3) {
-    // Extract spreadsheet id from the link.
-    var spreadsheetAddress = group[3];
-    var ID_PATH = 'spreadsheets/d/';
-    var index = spreadsheetAddress.indexOf(ID_PATH);
-    if (index != -1) {
-      var idEnd = spreadsheetAddress.indexOf('/', index + ID_PATH.length);
-      this.reportSheetId = spreadsheetAddress.substring(index + ID_PATH.length, idEnd);
-    }
-  }
-};
-
 // Controller to list every groups.
-AddressBookController = function($scope, $mdDialog, $mdMenu, AuthService) {
+AddressBookController = function($scope, $mdDialog, $mdMenu, GroupsService) {
   // Store the injected services.
   this.$scope = $scope;
   this.$mdDialog = $mdDialog;
   this.$mdMenu = $mdMenu;
-  this.AuthService = AuthService;
-
-  // The Google Spreadsheets with the address book. This contains information of
-  // sheets in the spreadsheets.
-  this.sheets = null;
 
   // Sheet containing information of every group.
-  this.allGroupSheet = null;
+  this.allGroupSheet = GroupsService.allGroupSheet;
+  GroupsService.listen(angular.bind(this, this.handleLoadingAllGroups));
 
   this.groupsOrder = 'name'
-
-  // Be notified by the login status change.
-  gapi.auth2.getAuthInstance().isSignedIn.listen(
-      angular.bind(this, this.updateSigninStatus));
-
-  // If already signed in, load the address book.
-  if (AuthService.isSignedIn) {
-    this.updateSigninStatus(true);
-  }
-};
-
-AddressBookController.prototype.updateSigninStatus = function(isSignedIn) {
-  if (this.AuthService.isSignedIn) {
-    // Does not need to load the sheet multiple times.
-    if (!this.allGroupSheets) {
-      gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: ADDRESSBOOK_ID
-    }).then(angular.bind(this, this.handleLoadingSheets));
-    }
-  } else {
-    this.sheets = null;
-    this.allGroupSheet = null;
-    this.$scope.$apply();
-  }
-};
-
-AddressBookController.prototype.handleLoadingSheets = function(response) {
-  this.sheets = response.result;
-  var allGroupSheet = null;
-  for (var i = 0; i < this.sheets.sheets.length; ++i) {
-    var sheet = this.sheets.sheets[i];
-    var sheetProperties = sheet.properties;
-    if (sheetProperties.title.indexOf('전체 목장') != -1) {
-      allGroupSheet = sheet;
-      break;
-    }
-  }
-  if (allGroupSheet) {
-    var gridProperties = allGroupSheet.properties.gridProperties;
-    var startRow = gridProperties.frozenRowCount + 1;
-    // TODO(youngjin): Use this instead of hard-coded 'C'.
-    var endColumn = gridProperties.columnCount;
-    var range = allGroupSheet.properties.title + '!A' + startRow  + ':D' + gridProperties.rowCount;
-    gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: ADDRESSBOOK_ID,
-      range: range
-    }).then(angular.bind(this, this.handleLoadingAllGroups));
-  } else {
-    this.$mdDialog.show(
-      this.$mdDialog.alert()
-      .parent(angular.element(document.querySelector('#popupContainer')))
-      .clickOutsideToClose(true)
-      .title('Cannot find a sheet of listing all groups.')
-      .textContent('Cannot find It!!!')
-      .ariaLabel('Alert Dialog Demo')
-      .ok('Got it!')
-      );
-  }
-  this.$scope.$apply();
 };
 
 // Handler when a sheet containing all groups is loaded.
-AddressBookController.prototype.handleLoadingAllGroups = function(response) {
-  this.allGroupSheet = [];
-  for (var i = 0; i < response.result.values.length; ++i) {
-    this.allGroupSheet.push(new GroupData(response.result.values[i]));
-  }
+AddressBookController.prototype.handleLoadingAllGroups = function(allGroups) {
+  this.allGroupSheet = allGroups;
   this.$scope.$apply();
-};
-
-// Returns a link of report for each group.
-AddressBookController.prototype.getReportLink = function(group) {
-  var link = '/#/report?name=' + group.name + '&report_sheetid=' + group.reportSheetId;
-  return link;
 };
 
 AddressBookController.prototype.openMenu = function($mdMenu, ev) {
@@ -297,15 +206,17 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
 // Loading members in the group.
 SubmitReportController.prototype.handleLoadingGroup = function(response) {
   this.memberData = [];
-  for (var i = 0; i < response.result.values.length; ++i) {
-    this.memberData.push(new MemberData(response.result.values[i][0]));
+  if (response.result.values) {
+    for (var i = 0; i < response.result.values.length; ++i) {
+      this.memberData.push(new MemberData(response.result.values[i][0]));
+    }
+    this.memberData.sort(function(a, b) {
+        if (a.name > b.name) return 1;
+        if (a.name < b.name) return -1;
+        return 0;
+        });
+    this.maybeMergeLoadedReport();
   }
-  this.memberData.sort(function(a, b) {
-      if (a.name > b.name) return 1;
-      if (a.name < b.name) return -1;
-      return 0;
-      });
-  this.maybeMergeLoadedReport();
   this.$scope.$apply();
 };
 
@@ -581,7 +492,7 @@ SubmitReportController.prototype.cancelPrayerList = function() {
 
 // Register controllers.
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
-SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'AuthService', AddressBookController]);
+SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'GroupsService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
 
 // Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.
