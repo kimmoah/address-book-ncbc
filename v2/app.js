@@ -99,49 +99,12 @@ AddressBookController.prototype.handleLoadingAllGroups = function(allGroups) {
   this.$scope.$apply();
 };
 
+AddressBookController.prototype.getReportTitle = function() {
+  return reportTitle();
+};
+
 AddressBookController.prototype.openMenu = function($mdMenu, ev) {
-console.log(this.$mdMenu);
   this.$mdMenu.open(ev);
-};
-
-MemberStatus = function(text, iconColor, materialIconClass, svgSrc) {
-  this.text = text;
-  this.iconColor = iconColor;
-  this.materialIconClass = materialIconClass;
-  this.svgSrc = svgSrc;
-};
-
-MemberData = function(name) {
-  this.name = name;
-  this.status = 0;
-  this.prayer = '';
-  this.note = '';
-};
-
-MemberData.status = [
-  new MemberStatus('잘 모름', '#212121', 'help', ''),
-  new MemberStatus('모두 참석하지 않음', '#B71C1C', 'cancel', ''),
-  new MemberStatus('예배만 참석', '#00E676', '', 'church.svg'),
-  new MemberStatus('목장만 참석', '#FFEB3B', 'people', ''),
-  new MemberStatus('예배 및 목장 참석', '#0091EA', 'thumb_up', '')
-];
-
-MemberData.prototype.statusIconColor = function(targetStatus) {
-  if (this.status != targetStatus) {
-    return {'color': '#9e9e9e'};
-  } else {
-    return {'color': MemberData.status[this.status].iconColor};
-  }
-};
-
-MemberData.prototype.getReportArray = function() {
-  var ret = [];
-  ret.push(this.name);
-  ret.push(MemberData.status[this.status].text);
-  ret.push(this.prayer);
-  ret.push(this.note);
-
-  return ret;
 };
 
 SubmitReportController = function($scope, $location, $mdDialog, $window) {
@@ -184,7 +147,7 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
       angular.bind(this, this.handleLoadingGroupFailure));
 
     var reportRange =
-      this.reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
+      reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
     console.log(reportRange);
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: this.reportSpreadSheetId,
@@ -237,18 +200,14 @@ SubmitReportController.prototype.handleLoadingReport = function(response) {
   if (!response.result.values) {
     return;
   }
+
   // The first row is the group note.
   if (response.result.values.length > 1) {
     this.groupNote = response.result.values[0][1];
   }
-  for (var i = 1; i < response.result.values.length; ++i) {
-    var memberData = new MemberData(response.result.values[i][0]);
-    memberData.prayer = response.result.values[i][2];
-    memberData.note = response.result.values[i][3];
-    var statusIndex = MemberData.status.indexOf(response.result.values[i][1]);
-    if (statusIndex != -1) {
-      memberData.status = statusIndex;
-    }
+  var members = MemberDataFromSheet(response);
+  for (var i = 0; i < members.length; ++i) {
+    var memberData = members[i];
     this.storedReport[memberData.name] = memberData;
   }
   this.maybeMergeLoadedReport();
@@ -289,14 +248,6 @@ SubmitReportController.prototype.handleLoadingReportFailure = function(response)
   }
 };
 
-// Title of the report, which will be the name of the sheet.
-SubmitReportController.prototype.reportTitle = function() {
-  var today = new Date();
-  var diff = today.getDate() - today.getDay();
-  var sunday = new Date(today.setDate(diff));
-  return sunday.getFullYear() + '/' + (sunday.getMonth()+1) + '/' + sunday.getDate();
-};
-
 // Submit the report.
 SubmitReportController.prototype.submitReport = function(response) {
   // Do not need to create a sheet if it is already there.
@@ -310,7 +261,7 @@ SubmitReportController.prototype.submitReport = function(response) {
     'requests': [{
       'addSheet': {
         'properties': {
-          'title': this.reportTitle(),
+          'title': reportTitle(),
           'gridProperties': {
             'rowCount': 100,  // give enough number.
             'frozenRowCount': 1,
@@ -322,35 +273,6 @@ SubmitReportController.prototype.submitReport = function(response) {
 };
 
 SubmitReportController.prototype.createSheetSucess = function(response) {
-/*
-  var gridRange = {
-    'sheetId': response.result.replies[0].addSheet.properties.sheetId,
-    'startRowIndex': 1,
-    'endRowIndex': 100,
-    'startColumnIndex': 1,
-    'endColumnIndex': 1,
-  };
-  var values = [];
-  for (var i = 0; i < MemberData.status.length; ++i) {
-    values.push({'userEnteredValue': MemberData.status[i]});
-  }
-  gapi.client.sheets.spreadsheets.batchUpdate({
-    spreadsheetId: this.reportSpreadSheetId,
-    'requests': [{
-      'setDataValidation': {
-        'range': gridRange,
-        'rule': {
-          'condition': {
-            'type': ConditionType.TEXT_EQ,
-            'values': values
-          }
-        }
-      }
-    }]
-  }).then(angular.bind(this, this.addReportSheet),
-    angular.bind(this, this.addReportSheet));
-*/
-
   this.addReportSheet();
 };
 
@@ -403,7 +325,7 @@ SubmitReportController.prototype.addReportSheet = function() {
     values.push(this.memberData[i].getReportArray());
   }
 
-  var range = this.reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
+  var range = reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
   gapi.client.sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
     valueInputOption: 'RAW',
@@ -418,7 +340,7 @@ SubmitReportController.prototype.addReportSheet = function() {
 
 SubmitReportController.prototype.addReportSheetReponse = function(response) {
   var valueRow = [];
-  valueRow.push(this.reportTitle());
+  valueRow.push(reportTitle());
   valueRow.push(this.name);
 
   gapi.client.sheets.spreadsheets.values.append({
@@ -494,6 +416,7 @@ SubmitReportController.prototype.cancelPrayerList = function() {
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
 SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'GroupsService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
+SaenuriYoungModule.controller('ReportSummaryController', ['$scope', 'GroupsService', ReportSummaryController]);
 
 // Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.
 SaenuriYoungModule.directive('elastic', [
@@ -533,6 +456,12 @@ SaenuriYoungModule.config(function($routeProvider) {
     templateUrl: '/report.html',
     controller: SubmitReportController,
     controllerAs: 'submitReportCtrl',
+    resolve: AuthServiceResolve
+  })
+  .when('/summary', {
+    templateUrl: '/summary.html',
+    controller: ReportSummaryController,
+    controllerAs: 'reportSummaryCtrl',
     resolve: AuthServiceResolve
   })
 });
