@@ -65,14 +65,14 @@ TopPageController.prototype.alertAuthIsNotReady_ = function() {
 };
 
 TopPageController.prototype.handleAuthClick = function() {
-  if (!this.isAuthServiceInitialized_) {
+  if (!this.isAuthServiceInitialized) {
     this.alertAuthIsNotReady_();
     return;
   }
   gapi.auth2.getAuthInstance().signIn();
 };
 TopPageController.prototype.handleSignoutClick = function() {
-  if (!this.isAuthServiceInitialized_) {
+  if (!this.isAuthServiceInitialized) {
     this.alertAuthIsNotReady_();
     return;
   }
