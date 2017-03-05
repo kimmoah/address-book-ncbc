@@ -50,7 +50,7 @@
           <ul style="list-style-type:none" ng-if="group.attendence">
             <li>전체 재적 인원: {{ group.attendence.numMembers }}</li>
             <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-              {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers }} %)
+              {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers | number:1 }} %)
             </li>
           </ul>
           <md-list ng-if="group.members" class="md-dense">
