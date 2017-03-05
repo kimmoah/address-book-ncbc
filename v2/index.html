@@ -33,7 +33,11 @@
     <script src="https://apis.google.com/js/api.js"></script>
   </head>
   <body ng-controller="TopPageController as topCtrl" layout="column">
-  <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn()" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
+  <div ng-if="!topCtrl.isAuthServiceInitialized" layout="column">
+    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    <span>로그인 모듈을 초기화하고 있습니다.</span>
+  </div>
+  <md-button class="md-raised md-primary" ng-if="!topCtrl.isSignedIn() && topCtrl.isAuthServiceInitialized" ng-click="topCtrl.handleAuthClick()">Sign In</md-button>
 
     <md-content ng-view flex layout="column"></md-content>
   </body>

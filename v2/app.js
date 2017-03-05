@@ -12,7 +12,7 @@ TopPageController = function($scope, $mdDialog, $location, AuthService) {
   // need to be notified by it.
   AuthService.promise.then(angular.bind(this, this.AuthServiceInitDone));
   this.AuthService = AuthService;
-  this.isAuthServiceInitialized_ = false;
+  this.isAuthServiceInitialized = false;
   this.addressBookSpreadSheetId = ADDRESSBOOK_ID;
 };
 
@@ -23,11 +23,11 @@ TopPageController.prototype.getReportGroupName = function() {
 };
 
 TopPageController.prototype.AuthServiceInitDone = function() {
-  this.isAuthServiceInitialized_ = true;
+  this.isAuthServiceInitialized = true;
 };
 
 TopPageController.prototype.isSignedIn = function() {
-  return this.isAuthServiceInitialized_ && this.AuthService.isSignedIn;
+  return this.isAuthServiceInitialized && this.AuthService.isSignedIn;
 };
 
 TopPageController.prototype.getUserEmail = function() {
