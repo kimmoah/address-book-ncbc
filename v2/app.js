@@ -114,6 +114,9 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   this.$location = $location;
   this.$window = $window;
 
+
+  this.lastSavedTimestamp = 0;
+
   // To use from the template.
   this.memberStatus = MemberData.status;
   var search = $location.search();
@@ -127,6 +130,7 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   // Stored report, object. Key is the name, and value is MemberData.
   // Empty Object means that there is no stored report.
   this.storedReport = null;
+  this.numMembersInReport = -1;
 
   this.groupNote = '';
 
@@ -149,7 +153,6 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
 
     var reportRange =
       reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
-    console.log(reportRange);
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: this.reportSpreadSheetId,
       range: reportRange
@@ -211,6 +214,7 @@ SubmitReportController.prototype.handleLoadingReport = function(response) {
     this.groupNote = response.result.values[0][1];
   }
   var members = MemberDataFromSheet(response);
+  this.numMembersInReport = members.length;
   for (var i = 0; i < members.length; ++i) {
     var memberData = members[i];
     this.storedReport[memberData.name] = memberData;
@@ -260,6 +264,7 @@ SubmitReportController.prototype.submitReport = function(response) {
     this.addReportSheet();
     return;
   }
+
   // First, create the sheet.
   gapi.client.sheets.spreadsheets.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
@@ -329,6 +334,16 @@ SubmitReportController.prototype.addReportSheet = function() {
   for (var i = 0; i < this.memberData.length; ++i) {
     values.push(this.memberData[i].getReportArray());
   }
+
+  // DUMMY to delete the old report.
+  var dummy = ['', '', '', ''];
+  var extraMembers = this.numMembersInReport - this.memberData.length;
+  for (var i = 0; i < extraMembers; ++i) {
+    values.push(dummy);
+  }
+
+  this.reportForm.$setPristine();
+  this.lastSavedTimestamp = Date.now();
 
   var range = reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
   gapi.client.sheets.spreadsheets.values.batchUpdate({
@@ -413,11 +428,15 @@ SubmitReportController.prototype.sharePrayer = function() {
         .ok('닫기')
         );
   }
-
 };
 
 SubmitReportController.prototype.cancelPrayerList = function() {
   this.$mdDialog.cancel();
+};
+
+SubmitReportController.prototype.clickAttendance = function(member, status) {
+  member.status = status;
+  this.reportForm.$setDirty();
 };
 
 // Register controllers.

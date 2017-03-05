@@ -7,7 +7,8 @@
       <span>{{ submitReportCtrl.name }} 목장 리포트</span>
     </div>
     <div>
-      <md-button class="md-icon-button" ng-click="submitReportCtrl.submitReport()">
+      <md-button class="md-icon-button" ng-click="submitReportCtrl.submitReport()"
+                 ng-disabled="!submitReportCtrl.reportForm.$dirty">
         <md-icon class="material-icons" aria-label="Save">save</md-icon>
       </md-button>
     </div>
@@ -34,6 +35,7 @@
              </md-card-title-text>
            </md-card-title>
         </md-card>
+        <form name="submitReportCtrl.reportForm">
          <md-card ng-repeat="member in submitReportCtrl.memberData">
            <md-card-title>
              <md-card-title-text>
@@ -44,7 +46,7 @@
              <md-list>
                <md-list-item>
                  <p>출석</p>
-                 <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status" ng-click="member.status = $index" >
+                 <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status" ng-click="submitReportCtrl.clickAttendance(member, $index)" >
                    <md-icon ng-if="status.materialIconClass" class="material-icons"aria-label="Attendence Icon" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
                    <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" aria-label="Attendence Icon" ng-style="member.statusIconColor($index)"></md-icon>
                  </md-button>
@@ -73,11 +75,12 @@
 <div layout="column" layout-fill>
             <md-input-container flex>
               <label>목장 노트</label>
-              <textarea elastic ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
+              <textarea elastic name="group_note" ng-model="submitReportCtrl.groupNote" rows="3">{{submitReportCtrl.groupNote}}</textarea>
             </md-input-container>
 </div>
            </md-card-content>
          </md-card>
+         </form>
       </md-tab-body>
     </md-tab>
     <md-tab id="attendance">

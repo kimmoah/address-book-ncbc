@@ -78,7 +78,7 @@ ReportSummaryController.prototype.handleLoadingAllGroups = function(allGroups) {
   this.total = new AttendenceCounter();
   for (var i = 0; i < allGroups.length; ++i) {
     var group = allGroups[i];
-    if (!group.reportSheetId) {
+    if (!group.reportSheetId || group.tier == 'test') {
       continue;
     }
     ++this.numReports;

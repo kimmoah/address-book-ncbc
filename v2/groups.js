@@ -114,7 +114,6 @@ GroupsServiceBody.prototype.handleLoadingAllGroups = function(response) {
   for (var i = 0; i < response.result.values.length; ++i) {
     this.allGroupSheet.push(new GroupData(i + 2, response.result.values[i]));
   }
-  console.log(response);
   this.notifyListeners();
 };
 

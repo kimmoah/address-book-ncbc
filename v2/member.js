@@ -46,13 +46,14 @@ MemberData.prototype.getReportArray = function() {
   return ret;
 };
 
+// Member data from the report.
 function MemberDataFromSheet(response) {
   var members = [];
   if (!response.result.values) {
     return members;
   }
 
-  // The first row is the group note.
+  // The first row is the title and the second row is the group note.
   for (var i = 2; i < response.result.values.length; ++i) {
     var memberData = new MemberData(response.result.values[i][0]);
     memberData.prayer = response.result.values[i][2];
