@@ -1,0 +1,74 @@
+<md-toolbar class="md-toolbar-tools ">
+  <div layout="row" flex class="fill-height" layout-align="space-between center">
+    <div>
+      <md-button class="md-icon-button" href="/#/">
+        <md-icon class="material-icons" aria-label="Back">arrow_back</md-icon>
+      </md-button>
+      <span>전체 목장 리포트</span>
+    </div>
+  </div>
+</md-toolbar>
+<md-content>
+  <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
+  <div layout="column">
+    <md-card>
+      <md-card-title style="background-color: #E91E63; color: white;">
+        <md-card-title-text>전체 출석 통계</md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
+        <ul style="list-style-type:none">
+          <li>재적 인원: {{ reportSummaryCtrl.total.numMembers }}</li>
+          <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+            {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
+            </li>
+        </ul>
+      </md-card-content>
+    </md-card>
+    <md-card ng-repeat="tierSummary in reportSummaryCtrl.summaryPerTier">
+      <md-card-title ng-style="tierSummary.cardTitleStyle()">
+        <md-card-title-text>{{tierSummary.name}} 공동체 출석 통계</md-card-title-text>
+      </md-card-title>
+      <md-card-content>
+        <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
+        <ul style="list-style-type:none">
+          <li>재적 인원: {{ tierSummary.attendence.numMembers }}</li>
+          <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+            {{ status.text }} : {{ tierSummary.attendence.statusCount[$index] }} ( {{ tierSummary.attendence.statusCount[$index] * 100 / tierSummary.attendence.numMembers | number:1 }} %)
+            </li>
+        </ul>
+      </md-card-content>
+    </md-card>
+    <div ng-repeat="tier in reportSummaryCtrl.summaryPerTier">
+      <md-card ng-repeat="group in tier.groups">
+        <md-card-title ng-style="group.tier.cardTitleStyle()">
+          <md-card-title-text>{{ group.group.name }} 목장 ({{ group.group.tier }})</md-card-title-text>
+        </md-card-title>
+        <md-card-content>
+          <span ng-if="group.loadingStatus">{{ group.loadingStatus }}</span>
+          <md-progress-circular ng-if="!group.loadingStatus && !group.attendence" md-mode="indeterminate"></md-progress-circular>
+          <ul style="list-style-type:none" ng-if="group.attendence">
+            <li>전체 재적 인원: {{ group.attendence.numMembers }}</li>
+            <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+              {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers }} %)
+            </li>
+          </ul>
+          <md-list ng-if="group.members" class="md-dense">
+            <md-list-item ng-repeat="member in group.members" class="md-2-line">
+              <md-icon ng-if="member.materialIconClass()" class="material-icons" aria-label="Attendence Icon" ng-style="member.statusIconColor(member.status)">{{member.materialIconClass()}}</md-icon>
+              <md-icon ng-if="member.svgSrc()" md-svg-src="{{member.svgSrc()}}" aria-label="Attendence Icon" ng-style="member.statusIconColor(member.status)"></md-icon>
+              <div class="md-list-item-text" layout="column">
+              <h3>{{ member.name }}</h3>
+                <h4>기도 제목: 
+                  <span ng-if="member.prayer">{{ member.prayer }}</span>
+                  <span ng-if="!member.prayer">N/A</span>
+                </h4>
+                <h4 ng-if="member.note">노트: {{ member.note }}</h4>
+              </div>
+            </md-list-item>
+          </md-list>
+        </md-card-content>
+      </md-card>
+    </div>
+  </div>
+</md-content>
