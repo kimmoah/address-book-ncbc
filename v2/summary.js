@@ -111,7 +111,8 @@ ReportSummaryController.prototype.handleLoadingReport = function(groupSummary, r
   this.$scope.$apply();
 };
 
-ReportSummaryController.prototype.handleLoadingReportFailure = function(groupSummary, response) {
+ReportSummaryController.prototype.handleLoadingReportFailure = function(
+    groupSummary, response) {
   ++this.numLoadedReports;
   this.progress = this.numLoadedReports * 100 / this.numReports;
 
