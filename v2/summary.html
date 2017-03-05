@@ -42,7 +42,7 @@
     <div ng-repeat="tier in reportSummaryCtrl.summaryPerTier">
       <md-card ng-repeat="group in tier.groups">
         <md-card-title ng-style="group.tier.cardTitleStyle()">
-          <md-card-title-text>{{ group.group.name }} 목장 ({{ group.group.tier }})</md-card-title-text>
+          <md-card-title-text>{{ group.group.name }} 목장 ({{ group.group.leader }})</md-card-title-text>
         </md-card-title>
         <md-card-content>
           <span ng-if="group.loadingStatus">{{ group.loadingStatus }}</span>
