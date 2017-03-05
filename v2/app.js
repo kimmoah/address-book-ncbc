@@ -121,6 +121,7 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   // Extract name and sheet id from the query parameters.
   this.name = search['name'];
   this.reportSpreadSheetId = search['report_sheetid'];
+  this.reportLogRow = search['report_log_row'];
   this.memberData = null;
 
   // Stored report, object. Key is the name, and value is MemberData.
@@ -164,6 +165,10 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
         .ok('Oops!')
         );
   }
+};
+
+SubmitReportController.prototype.reportTitle = function() {
+  return reportTitle();
 };
 
 // Loading members in the group.
@@ -339,16 +344,20 @@ SubmitReportController.prototype.addReportSheet = function() {
 };
 
 SubmitReportController.prototype.addReportSheetReponse = function(response) {
-  var valueRow = [];
-  valueRow.push(reportTitle());
-  valueRow.push(this.name);
+  if (this.reportLogRow) {
+    var valueRow = [];
+    var now = new Date();
+    valueRow.push(now.toLocaleDateString() + ' ' + now.toLocaleTimeString());
 
-  gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: ADDRESSBOOK_ID,
-    valueInputOption: 'RAW',
-    range: 'ReportLogs!A1:C1',
-    values: [valueRow]
-  }).then(angular.bind(this, this.addReportLogsResponse));
+    var range = '전체 목장!' + REPORT_LOG_COLUMN + this.reportLogRow + ':' +
+      REPORT_LOG_COLUMN + this.reportLogRow;
+    gapi.client.sheets.spreadsheets.values.update({
+      spreadsheetId: ADDRESSBOOK_ID,
+      valueInputOption: 'USER_ENTERED',
+      range: range,
+      values: [valueRow]
+      }).then(angular.bind(this, this.addReportLogsResponse));
+  }
 
   this.$mdDialog.show(
       this.$mdDialog.alert()
@@ -410,7 +419,6 @@ SubmitReportController.prototype.sharePrayer = function() {
 SubmitReportController.prototype.cancelPrayerList = function() {
   this.$mdDialog.cancel();
 };
-
 
 // Register controllers.
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
