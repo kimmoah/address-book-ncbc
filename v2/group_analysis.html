@@ -34,8 +34,8 @@
           <td md-cell align="center">{{ analysis.name }}</td>
           <td md-cell align="left">
             <span ng-repeat="attend in analysis.attendance">
-              <md-icon ng-if="attend.member.materialIconClass()" class="material-icons" aria-label="Attendence Icon" ng-style="attend.member.statusIconColor(attend.member.status)">{{attend.member.materialIconClass()}}</md-icon>
-              <md-icon ng-if="attend.member.svgSrc()" md-svg-src="{{attend.member.svgSrc()}}" aria-label="Attendence Icon" ng-style="attend.member.statusIconColor(attend.member.status)"></md-icon>
+              <md-icon ng-if="attend.member.materialIconClass()" class="material-icons" aria-label="Attendance Icon" ng-style="attend.member.statusIconColor(attend.member.status)">{{attend.member.materialIconClass()}}</md-icon>
+              <md-icon ng-if="attend.member.svgSrc()" md-svg-src="{{attend.member.svgSrc()}}" aria-label="Attendance Icon" ng-style="attend.member.statusIconColor(attend.member.status)"></md-icon>
               ({{ attend.date | date:'yyyy/MM/dd' }})
             </span>
           </td>

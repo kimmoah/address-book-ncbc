@@ -58,8 +58,8 @@
                <md-list-item>
                  <p>출석</p>
                  <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" aria-label="attendance status" ng-click="submitReportCtrl.clickAttendance(member, $index)" >
-                   <md-icon ng-if="status.materialIconClass" class="material-icons"aria-label="Attendence Icon" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
-                   <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" aria-label="Attendence Icon" ng-style="member.statusIconColor($index)"></md-icon>
+                   <md-icon ng-if="status.materialIconClass" class="material-icons"aria-label="Attendance Icon" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
+                   <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" aria-label="Attendance Icon" ng-style="member.statusIconColor($index)"></md-icon>
                  </md-button>
                </md-list-item>
                <md-list-item>
@@ -103,8 +103,8 @@
           <md-list-item ng-repeat="member in submitReportCtrl.memberData">
             <p>{{member.name}}</p>
             <md-button class="md-icon-button" ng-repeat="status in submitReportCtrl.memberStatus" ng-click="member.status = $index" aria-label="attendance status">
-              <md-icon ng-if="status.materialIconClass" class="material-icons" aria-label="Attendence icon" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
-              <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" aria-label="Attendence Icon" ng-style="member.statusIconColor($index)"></md-icon>
+              <md-icon ng-if="status.materialIconClass" class="material-icons" aria-label="Attendance icon" ng-style="member.statusIconColor($index)">{{status.materialIconClass}}</md-icon>
+              <md-icon ng-if="status.svgSrc" md-svg-src="{{status.svgSrc}}" aria-label="Attendance Icon" ng-style="member.statusIconColor($index)"></md-icon>
             </md-button>
           </md-list-item>
         </md-list>

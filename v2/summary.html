@@ -44,10 +44,10 @@
       <md-card-content>
         <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
         <ul style="list-style-type:none">
-          <li>재적 인원: {{ tierSummary.attendence.numMembers }}
+          <li>재적 인원: {{ tierSummary.attendance.numMembers }}
             <ul>
-              <li>출석 인원: {{ tierSummary.attendence.numAttends }} ( {{ tierSummary.attendence.attendPercent() | number:1 }} %)
-              <li>결석 인원: {{ tierSummary.attendence.numAbsent() }} ( {{ tierSummary.attendence.absentPercent() | number:1 }} %)
+              <li>출석 인원: {{ tierSummary.attendance.numAttends }} ( {{ tierSummary.attendance.attendPercent() | number:1 }} %)
+              <li>결석 인원: {{ tierSummary.attendance.numAbsent() }} ( {{ tierSummary.attendance.absentPercent() | number:1 }} %)
              </li>
             </ul>
           </li>
@@ -56,7 +56,7 @@
           <li>자세한 출석 상황
             <ul>
               <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                {{ status.text }} : {{ tierSummary.attendence.statusCount[$index] }} ( {{ tierSummary.attendence.statusCount[$index] * 100 / tierSummary.attendence.numMembers | number:1 }} %)
+                {{ status.text }} : {{ tierSummary.attendance.statusCount[$index] }} ( {{ tierSummary.attendance.statusCount[$index] * 100 / tierSummary.attendance.numMembers | number:1 }} %)
               </li>
             </ul>
           </li>
@@ -70,13 +70,13 @@
         </md-card-title>
         <md-card-content>
           <span ng-if="group.loadingStatus">{{ group.loadingStatus }}</span>
-          <md-progress-circular ng-if="!group.loadingStatus && !group.attendence" md-mode="indeterminate"></md-progress-circular>
-          <div ng-if="group.attendence">
+          <md-progress-circular ng-if="!group.loadingStatus && !group.attendance" md-mode="indeterminate"></md-progress-circular>
+          <div ng-if="group.attendance">
           <ul style="list-style-type:none">
-            <li>재적 인원: {{ group.attendence.numMembers }}
+            <li>재적 인원: {{ group.attendance.numMembers }}
               <ul>
-                <li>출석 인원: {{ group.attendence.numAttends }} ( {{ group.attendence.attendPercent() | number:1 }} %)
-                <li>결석 인원: {{ group.attendence.numAbsent() }} ( {{ group.attendence.absentPercent() | number:1 }} %)
+                <li>출석 인원: {{ group.attendance.numAttends }} ( {{ group.attendance.attendPercent() | number:1 }} %)
+                <li>결석 인원: {{ group.attendance.numAbsent() }} ( {{ group.attendance.absentPercent() | number:1 }} %)
                </li>
               </ul>
             </li>
@@ -85,7 +85,7 @@
             <li>자세한 출석 상황
               <ul>
                 <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                  {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers | number:1 }} %)
+                  {{ status.text }} : {{ group.attendance.statusCount[$index] }} ( {{ group.attendance.statusCount[$index] * 100 / group.attendance.numMembers | number:1 }} %)
                 </li>
               </ul>
             </li>
@@ -93,8 +93,8 @@
           </div>
           <md-list ng-if="group.members" class="md-dense">
             <md-list-item ng-repeat="member in group.members" class="md-2-line">
-              <md-icon ng-if="member.materialIconClass()" class="material-icons" aria-label="Attendence Icon" ng-style="member.statusIconColor(member.status)">{{member.materialIconClass()}}</md-icon>
-              <md-icon ng-if="member.svgSrc()" md-svg-src="{{member.svgSrc()}}" aria-label="Attendence Icon" ng-style="member.statusIconColor(member.status)"></md-icon>
+              <md-icon ng-if="member.materialIconClass()" class="material-icons" aria-label="attendance Icon" ng-style="member.statusIconColor(member.status)">{{member.materialIconClass()}}</md-icon>
+              <md-icon ng-if="member.svgSrc()" md-svg-src="{{member.svgSrc()}}" aria-label="attendance Icon" ng-style="member.statusIconColor(member.status)"></md-icon>
               <div class="md-list-item-text" layout="column">
               <h3>{{ member.name }}</h3>
                 <h4>기도 제목: 

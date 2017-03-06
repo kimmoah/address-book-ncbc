@@ -47,7 +47,7 @@ MemberData.prototype.getReportArray = function() {
   return ret;
 };
 
-AttendenceCounter = function() {
+AttendanceCounter = function() {
   this.numMembers = 0;
   this.memberStatus = MemberData.status;
   this.numAttends = 0;
@@ -58,19 +58,19 @@ AttendenceCounter = function() {
   }
 };
 
-AttendenceCounter.prototype.attendPercent = function() {
+AttendanceCounter.prototype.attendPercent = function() {
   return this.numAttends * 100 / this.numMembers;
 };
 
-AttendenceCounter.prototype.numAbsent = function() {
+AttendanceCounter.prototype.numAbsent = function() {
   return this.numMembers - this.numAttends;
 };
 
-AttendenceCounter.prototype.absentPercent = function() {
+AttendanceCounter.prototype.absentPercent = function() {
   return this.numAbsent() * 100 / this.numMembers;
 };
 
-AttendenceCounter.prototype.increment = function(members) {
+AttendanceCounter.prototype.increment = function(members) {
   this.numMembers += members.length;
   for (var i = 0; i < members.length; ++i) {
     ++this.statusCount[members[i].status];

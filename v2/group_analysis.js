@@ -1,6 +1,6 @@
 GroupAnalysis = function(date) {
   this.date = date;
-  this.counter = new AttendenceCounter();
+  this.counter = new AttendanceCounter();
 };
 
 MemberDateAnalysis = function(date, member) {

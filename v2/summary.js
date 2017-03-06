@@ -1,13 +1,13 @@
-AttendenceSummary = function(name) {
+attendanceSummary = function(name) {
   this.name = name;
-  this.attendence = new AttendenceCounter();
+  this.attendance = new AttendanceCounter();
 };
 
 TierSummary = function(name, backgroundColor) {
   this.name = name;
   this.backgroundColor = backgroundColor;
   this.groups = [];
-  this.attendence = new AttendenceCounter();
+  this.attendance = new AttendanceCounter();
 };
 
 TierSummary.prototype.cardTitleStyle = function() {
@@ -17,7 +17,7 @@ TierSummary.prototype.cardTitleStyle = function() {
 GroupSummary = function(group, tier) {
   this.group = group;
   this.loadingStatus = null;
-  this.attendence = null;
+  this.attendance = null;
   this.members = null;
 
   // TierSummary.
@@ -25,8 +25,8 @@ GroupSummary = function(group, tier) {
 };
 
 GroupSummary.prototype.loadMembers = function(members) {
-  this.attendence = new AttendenceCounter();
-  this.attendence.increment(members);
+  this.attendance = new AttendanceCounter();
+  this.attendance.increment(members);
   this.members = members;
 };
 
@@ -37,7 +37,7 @@ ReportSummaryController = function($scope, GroupsService) {
 
   this.progress = 0;
 
-  this.total = new AttendenceCounter();
+  this.total = new AttendanceCounter();
   this.numReports = 0;
   this.numLoadedReports = 0;
   this.summaryPerTier = {};
@@ -50,7 +50,7 @@ ReportSummaryController = function($scope, GroupsService) {
 };
 
 ReportSummaryController.prototype.handleLoadingAllGroups = function(allGroups) {
-  this.total = new AttendenceCounter();
+  this.total = new AttendanceCounter();
   this.numReports = 0;
   this.numLoadedReports = 0;
   this.summaryPerTier = {};
@@ -61,7 +61,7 @@ ReportSummaryController.prototype.handleLoadingAllGroups = function(allGroups) {
   var tierColors = ['#039BE5', '#9C27B0', '#009688', '#43A047'];
   var currentColorIndex = 0;
 
-  this.total = new AttendenceCounter();
+  this.total = new AttendanceCounter();
   for (var i = 0; i < allGroups.length; ++i) {
     var group = allGroups[i];
     if (!group.reportSheetId || group.tier == 'test') {
@@ -92,7 +92,7 @@ ReportSummaryController.prototype.handleLoadingReport = function(groupSummary, r
 
   var members = MemberDataFromSheet(response);
   this.total.increment(members);
-  groupSummary.tier.attendence.increment(members);
+  groupSummary.tier.attendance.increment(members);
   groupSummary.loadMembers(members);
   this.$scope.$apply();
 };
