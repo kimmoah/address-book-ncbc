@@ -124,7 +124,8 @@ GroupAnalysisController.prototype.handleLoadingReportFailure = function(
 GroupAnalysisController.prototype.drawCharts = function() {
   var arrayData = [];
   var dataLegend = ['Date', '전체'];
-  var lineColors = ['#1A237E'];
+  var lineColors = ['#795548'];
+
   for (var i = 0; i < MemberData.status.length; ++i) {
     dataLegend.push(MemberData.status[i].text);
     lineColors.push(MemberData.status[i].iconColor);
