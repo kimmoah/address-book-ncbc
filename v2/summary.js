@@ -37,14 +37,16 @@ ReportSummaryController = function($scope, GroupsService) {
 
   this.progress = 0;
 
-  // Sheet containing information of every group.
-  GroupsService.listen(angular.bind(this, this.handleLoadingAllGroups));
-  this.handleLoadingAllGroups(GroupsService.allGroupSheet);
-
   this.total = new AttendenceCounter();
   this.numReports = 0;
   this.numLoadedReports = 0;
   this.summaryPerTier = {};
+
+  // Sheet containing information of every group.
+  GroupsService.listen(angular.bind(this, this.handleLoadingAllGroups));
+  if (GroupsService.allGroupSheet) {
+    this.handleLoadingAllGroups(GroupsService.allGroupSheet);
+  }
 };
 
 ReportSummaryController.prototype.handleLoadingAllGroups = function(allGroups) {
@@ -95,8 +97,7 @@ ReportSummaryController.prototype.handleLoadingReport = function(groupSummary, r
   this.$scope.$apply();
 };
 
-ReportSummaryController.prototype.handleLoadingReportFailure = function(
-    groupSummary, response) {
+ReportSummaryController.prototype.handleLoadingReportFailure = function(groupSummary, response) {
   ++this.numLoadedReports;
   this.progress = this.numLoadedReports * 100 / this.numReports;
 
