@@ -1,0 +1,47 @@
+<md-toolbar class="md-toolbar-tools">
+  <div layout="row" flex class="fill-height" layout-align="space-between center">
+    <div>
+      <md-button class="md-icon-button" ng-click="groupAnalysisCtrl.back()">
+        <md-icon class="material-icons" aria-label="Back">arrow_back</md-icon>
+      </md-button>
+      <span>{{ groupAnalysisCtrl.name }} 목장 출석 분석</span>
+    </div>
+    </div>
+</md-toolbar>
+<md-content>
+  <md-card>
+    <md-card-title style="background-color: #E91E63; color: white;">
+      <md-card-title-text>목원별 출석 상황</md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <div id="group_attendance_charts" style="width: 350px; height: 350px"></div>
+    </md-card-content>
+  </md-card>
+  <md-card>
+    <md-card-title style="background-color: #E91E63; color: white;">
+      <md-card-title-text>목원별 출석 상황</md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+      <table md-table>
+        <thead md-head md-order="groupAnalysisCtrl.analysisOrder">
+          <tr md-row>
+            <th md-column md-order-by="name">이름</th>
+            <th md-column>날짜</th>
+          </tr>
+        </thead>
+        <tbody md-body>
+        <tr md-row ng-repeat="analysis in groupAnalysisCtrl.memberAnalysis | orderBy: groupAnalysisCtrl.analysisOrder">
+          <td md-cell align="center">{{ analysis.name }}</td>
+          <td md-cell align="left">
+            <span ng-repeat="attend in analysis.attendance">
+              <md-icon ng-if="attend.member.materialIconClass()" class="material-icons" aria-label="Attendence Icon" ng-style="attend.member.statusIconColor(attend.member.status)">{{attend.member.materialIconClass()}}</md-icon>
+              <md-icon ng-if="attend.member.svgSrc()" md-svg-src="{{attend.member.svgSrc()}}" aria-label="Attendence Icon" ng-style="attend.member.statusIconColor(attend.member.status)"></md-icon>
+              ({{ attend.date | date:'yyyy/MM/dd' }})
+            </span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </md-card-content>
+  </md-card>
+</md-content>

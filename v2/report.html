@@ -34,6 +34,18 @@
              </md-card-title-text>
            </md-card-title>
         </md-card>
+        <md-card>
+          <md-card-title>
+            <md-card-title-text>
+              <div layout="row">
+                <md-button class="md-icon-button" ng-href="{{ submitReportCtrl.getAnalysisReportLink()}}">
+                  <md-icon class="material-icons" aria-label="Back" style="color: #E65100">assessment</md-icon>
+                </md-button>
+                <span class="md-headline">{{ submitReportCtrl.name }} 목장 출석 분석</span>
+              </div>
+            </md-card-title-text>
+          </md-card-title>
+        </md-card>
         <form name="submitReportCtrl.reportForm">
          <md-card ng-repeat="member in submitReportCtrl.memberData">
            <md-card-title>

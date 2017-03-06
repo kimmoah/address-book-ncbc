@@ -1,5 +1,5 @@
 // Define the main module.
-SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name, GroupsServiceModule.name, 'ngclipboard']);
+SaenuriYoungModule = angular.module('SaenuriYoungModule',['ngMaterial', 'ngRoute', 'ngMessages', 'md.data.table', AuthServiceModule.name, GroupsServiceModule.name, ChartsServiceModule.name, 'ngclipboard']);
 
 
 // Contraoller for the top page.
@@ -124,6 +124,8 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   // Extract name and sheet id from the query parameters.
   this.name = search['name'];
   this.reportSpreadSheetId = search['report_sheetid'];
+
+  // 1 based index of this row in the all groups page.
   this.reportLogRow = search['report_log_row'];
   this.memberData = null;
 
@@ -439,11 +441,17 @@ SubmitReportController.prototype.clickAttendance = function(member, status) {
   this.reportForm.$setDirty();
 };
 
+SubmitReportController.prototype.getAnalysisReportLink = function() {
+  return '/#/group_analysis?name=' + this.name + '&report_sheetid=' +
+    this.reportSpreadSheetId;
+};
+
 // Register controllers.
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
 SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'GroupsService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
 SaenuriYoungModule.controller('ReportSummaryController', ['$scope', 'GroupsService', ReportSummaryController]);
+SaenuriYoungModule.controller('GroupAnalysisController', ['$scope', '$location', '$window', 'ChartsService', GroupAnalysisController]);
 
 // Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.
 SaenuriYoungModule.directive('elastic', [
@@ -489,6 +497,12 @@ SaenuriYoungModule.config(function($routeProvider) {
     templateUrl: '/summary.html',
     controller: ReportSummaryController,
     controllerAs: 'reportSummaryCtrl',
+    resolve: AuthServiceResolve
+  })
+  .when('/group_analysis', {
+    templateUrl: '/group_analysis.html',
+    controller: GroupAnalysisController,
+    controllerAs: 'groupAnalysisCtrl',
     resolve: AuthServiceResolve
   })
 });

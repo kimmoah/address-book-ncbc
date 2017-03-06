@@ -46,6 +46,22 @@ MemberData.prototype.getReportArray = function() {
   return ret;
 };
 
+AttendenceCounter = function() {
+  this.numMembers = 0;
+  this.memberStatus = MemberData.status;
+  // Initialize counter per status.
+  this.statusCount = [];
+  for (var i = 0; i < MemberData.status.length; ++i) {
+    this.statusCount.push(0);
+  }
+};
+AttendenceCounter.prototype.increment = function(members) {
+  this.numMembers += members.length;
+  for (var i = 0; i < members.length; ++i) {
+    ++this.statusCount[members[i].status];
+  }
+};
+
 // Member data from the report.
 function MemberDataFromSheet(response) {
   var members = [];
