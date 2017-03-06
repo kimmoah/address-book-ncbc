@@ -1,8 +1,9 @@
-MemberStatus = function(text, iconColor, materialIconClass, svgSrc) {
+MemberStatus = function(text, iconColor, materialIconClass, svgSrc, attend) {
   this.text = text;
   this.iconColor = iconColor;
   this.materialIconClass = materialIconClass;
   this.svgSrc = svgSrc;
+  this.attend = attend;
 };
 
 MemberData = function(name) {
@@ -13,11 +14,11 @@ MemberData = function(name) {
 };
 
 MemberData.status = [
-  new MemberStatus('잘 모름', '#212121', 'help', ''),
-  new MemberStatus('모두 참석하지 않음', '#B71C1C', 'cancel', ''),
-  new MemberStatus('예배만 참석', '#00E676', '', 'church.svg'),
-  new MemberStatus('목장만 참석', '#FFEB3B', 'people', ''),
-  new MemberStatus('예배 및 목장 참석', '#0091EA', 'thumb_up', '')
+  new MemberStatus('잘 모름', '#212121', 'help', '', false),
+  new MemberStatus('모두 참석하지 않음', '#B71C1C', 'cancel', '', false),
+  new MemberStatus('예배만 참석', '#00E676', '', 'church.svg', true),
+  new MemberStatus('목장만 참석', '#FFEB3B', 'people', '', true),
+  new MemberStatus('예배 및 목장 참석', '#0091EA', 'thumb_up', '', true)
 ];
 
 MemberData.prototype.materialIconClass = function() {
@@ -49,16 +50,33 @@ MemberData.prototype.getReportArray = function() {
 AttendenceCounter = function() {
   this.numMembers = 0;
   this.memberStatus = MemberData.status;
+  this.numAttends = 0;
   // Initialize counter per status.
   this.statusCount = [];
   for (var i = 0; i < MemberData.status.length; ++i) {
     this.statusCount.push(0);
   }
 };
+
+AttendenceCounter.prototype.attendPercent = function() {
+  return this.numAttends * 100 / this.numMembers;
+};
+
+AttendenceCounter.prototype.numAbsent = function() {
+  return this.numMembers - this.numAttends;
+};
+
+AttendenceCounter.prototype.absentPercent = function() {
+  return this.numAbsent() * 100 / this.numMembers;
+};
+
 AttendenceCounter.prototype.increment = function(members) {
   this.numMembers += members.length;
   for (var i = 0; i < members.length; ++i) {
     ++this.statusCount[members[i].status];
+    if (this.memberStatus[members[i].status].attend) {
+      ++this.numAttends;
+    }
   }
 };
 

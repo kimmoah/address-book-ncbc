@@ -18,10 +18,22 @@
       <md-card-content>
         <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
         <ul style="list-style-type:none">
-          <li>재적 인원: {{ reportSummaryCtrl.total.numMembers }}</li>
-          <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-            {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
-            </li>
+          <li>재적 인원: {{ reportSummaryCtrl.total.numMembers }}
+            <ul>
+              <li>출석 인원: {{ reportSummaryCtrl.total.numAttends }} ( {{ reportSummaryCtrl.total.attendPercent() | number:1 }} %)
+              <li>결석 인원: {{ reportSummaryCtrl.total.numAbsent() }} ( {{ reportSummaryCtrl.total.absentPercent() | number:1 }} %)
+             </li>
+            </ul>
+          </li>
+        </ul>
+        <ul style="list-style-type:none">
+          <li>자세한 출석 상황
+            <ul>
+              <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+                {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
+              </li>
+            </ul>
+          </li>
         </ul>
       </md-card-content>
     </md-card>
@@ -32,10 +44,22 @@
       <md-card-content>
         <md-progress-linear md-mode="determinate" value="{{reportSummaryCtrl.progress}}" ng-if="reportSummaryCtrl.progress < 100"></md-progress-linear>
         <ul style="list-style-type:none">
-          <li>재적 인원: {{ tierSummary.attendence.numMembers }}</li>
-          <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-            {{ status.text }} : {{ tierSummary.attendence.statusCount[$index] }} ( {{ tierSummary.attendence.statusCount[$index] * 100 / tierSummary.attendence.numMembers | number:1 }} %)
-            </li>
+          <li>재적 인원: {{ tierSummary.attendence.numMembers }}
+            <ul>
+              <li>출석 인원: {{ tierSummary.attendence.numAttends }} ( {{ tierSummary.attendence.attendPercent() | number:1 }} %)
+              <li>결석 인원: {{ tierSummary.attendence.numAbsent() }} ( {{ tierSummary.attendence.absentPercent() | number:1 }} %)
+             </li>
+            </ul>
+          </li>
+        </ul>
+        <ul style="list-style-type:none">
+          <li>자세한 출석 상황
+            <ul>
+              <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+                {{ status.text }} : {{ tierSummary.attendence.statusCount[$index] }} ( {{ tierSummary.attendence.statusCount[$index] * 100 / tierSummary.attendence.numMembers | number:1 }} %)
+              </li>
+            </ul>
+          </li>
         </ul>
       </md-card-content>
     </md-card>
@@ -47,12 +71,26 @@
         <md-card-content>
           <span ng-if="group.loadingStatus">{{ group.loadingStatus }}</span>
           <md-progress-circular ng-if="!group.loadingStatus && !group.attendence" md-mode="indeterminate"></md-progress-circular>
-          <ul style="list-style-type:none" ng-if="group.attendence">
-            <li>전체 재적 인원: {{ group.attendence.numMembers }}</li>
-            <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-              {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers | number:1 }} %)
+          <div ng-if="group.attendence">
+          <ul style="list-style-type:none">
+            <li>재적 인원: {{ group.attendence.numMembers }}
+              <ul>
+                <li>출석 인원: {{ group.attendence.numAttends }} ( {{ group.attendence.attendPercent() | number:1 }} %)
+                <li>결석 인원: {{ group.attendence.numAbsent() }} ( {{ group.attendence.absentPercent() | number:1 }} %)
+               </li>
+              </ul>
             </li>
           </ul>
+          <ul style="list-style-type:none">
+            <li>자세한 출석 상황
+              <ul>
+                <li ng-repeat="status in reportSummaryCtrl.memberStatus">
+                  {{ status.text }} : {{ group.attendence.statusCount[$index] }} ( {{ group.attendence.statusCount[$index] * 100 / group.attendence.numMembers | number:1 }} %)
+                </li>
+              </ul>
+            </li>
+          </ul>
+          </div>
           <md-list ng-if="group.members" class="md-dense">
             <md-list-item ng-repeat="member in group.members" class="md-2-line">
               <md-icon ng-if="member.materialIconClass()" class="material-icons" aria-label="Attendence Icon" ng-style="member.statusIconColor(member.status)">{{member.materialIconClass()}}</md-icon>
