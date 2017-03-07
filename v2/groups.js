@@ -118,7 +118,6 @@ GroupsServiceBody.prototype.handleLoadingAllGroups = function(response) {
 };
 
 GroupsServiceBody.prototype.notifyListeners = function() {
-  console.log('notifylis');
   for (var i = 0; i < this.listeners.length; ++i) {
     this.listeners[i](this.allGroupSheet);
   }
