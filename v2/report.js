@@ -71,13 +71,6 @@ SubmitReportController.prototype.locationChangeStart = function(event, next, cur
       event.preventDefault();
     }
   }
-/*
-  if ($scope.myForm.$dirty) {
-    if(!) {
-      event.preventDefault();
-    }
-  }
-*/
 };
 
 SubmitReportController.prototype.checkOkToUnload = function() {
