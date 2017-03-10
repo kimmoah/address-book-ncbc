@@ -22,26 +22,30 @@
       <md-card-title-text>목원별 출석 상황</md-card-title-text>
     </md-card-title>
     <md-card-content>
+    <md-table-container>
       <table md-table>
         <thead md-head md-order="groupAnalysisCtrl.analysisOrder">
           <tr md-row>
             <th md-column md-order-by="name">이름</th>
-            <th md-column>날짜</th>
+            <th md-column ng-repeat="group in groupAnalysisCtrl.groupAnalysis" style="padding: 0px;">
+              {{ group.date | date:'yyyy/MM/dd' }}
+            </th>
           </tr>
         </thead>
         <tbody md-body>
         <tr md-row ng-repeat="analysis in groupAnalysisCtrl.memberAnalysis | orderBy: groupAnalysisCtrl.analysisOrder">
           <td md-cell align="center">{{ analysis.name }}</td>
-          <td md-cell align="left">
-            <span ng-repeat="attend in analysis.attendance">
-              <md-icon ng-if="attend.member.materialIconClass()" class="material-icons" aria-label="Attendance Icon" ng-style="attend.member.statusIconColor(attend.member.status)">{{attend.member.materialIconClass()}}</md-icon>
-              <md-icon ng-if="attend.member.svgSrc()" md-svg-src="{{attend.member.svgSrc()}}" aria-label="Attendance Icon" ng-style="attend.member.statusIconColor(attend.member.status)"></md-icon>
-              ({{ attend.date | date:'yyyy/MM/dd' }})
-            </span>
+          <td md-cell align="center" ng-repeat="attend in analysis.attendance track by $index">
+            <div ng-if="attend" layout="row" layout-align="center center">
+            <member-status-icon status="{{attend.member.status}}">
+            </member-status-icon>
+            </div>
+            <div ng-if="!attend">&nbsp;</div>
           </td>
         </tr>
         </tbody>
       </table>
+    </md-table-container>
     </md-card-content>
   </md-card>
 </md-content>

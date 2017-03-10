@@ -6,6 +6,13 @@ MemberStatus = function(text, iconColor, materialIconClass, svgSrc, attend) {
   this.attend = attend;
 };
 
+MemberStatus.prototype.getColor = function(gray) {
+  if (gray === 'true') {
+    return {'color': '#9e9e9e' };
+  }
+  return {'color': this.iconColor};
+};
+
 MemberData = function(name) {
   this.name = name;
   this.status = 0;
@@ -30,11 +37,7 @@ MemberData.prototype.svgSrc = function() {
 };
 
 MemberData.prototype.statusIconColor = function(targetStatus) {
-  if (this.status != targetStatus) {
-    return {'color': '#9e9e9e'};
-  } else {
-    return {'color': MemberData.status[this.status].iconColor};
-  }
+  return MemberData.status[this.status].getColor(this.status != targetStatus);
 };
 
 MemberData.prototype.getReportArray = function() {

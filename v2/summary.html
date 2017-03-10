@@ -30,7 +30,7 @@
           <li>자세한 출석 상황
             <ul>
               <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
+               <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
               </li>
             </ul>
           </li>
@@ -56,7 +56,7 @@
           <li>자세한 출석 상황
             <ul>
               <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                {{ status.text }} : {{ tierSummary.attendance.statusCount[$index] }} ( {{ tierSummary.attendance.statusCount[$index] * 100 / tierSummary.attendance.numMembers | number:1 }} %)
+                <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ tierSummary.attendance.statusCount[$index] }} ( {{ tierSummary.attendance.statusCount[$index] * 100 / tierSummary.attendance.numMembers | number:1 }} %)
               </li>
             </ul>
           </li>
@@ -85,7 +85,7 @@
             <li>자세한 출석 상황
               <ul>
                 <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                  {{ status.text }} : {{ group.attendance.statusCount[$index] }} ( {{ group.attendance.statusCount[$index] * 100 / group.attendance.numMembers | number:1 }} %)
+                  <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ group.attendance.statusCount[$index] }} ( {{ group.attendance.statusCount[$index] * 100 / group.attendance.numMembers | number:1 }} %)
                 </li>
               </ul>
             </li>
@@ -93,6 +93,7 @@
           </div>
           <md-list ng-if="group.members" class="md-dense">
             <md-list-item ng-repeat="member in group.members" class="md-2-line">
+            <!-- Find a way to use member-status-icon and let it use md-icon CSS -->
               <md-icon ng-if="member.materialIconClass()" class="material-icons" aria-label="attendance Icon" ng-style="member.statusIconColor(member.status)">{{member.materialIconClass()}}</md-icon>
               <md-icon ng-if="member.svgSrc()" md-svg-src="{{member.svgSrc()}}" aria-label="attendance Icon" ng-style="member.statusIconColor(member.status)"></md-icon>
               <div class="md-list-item-text" layout="column">

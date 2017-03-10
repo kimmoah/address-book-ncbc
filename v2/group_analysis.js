@@ -3,6 +3,7 @@ GroupAnalysis = function(date) {
   this.counter = new AttendanceCounter();
 };
 
+// @param {!MemberData} member.
 MemberDateAnalysis = function(date, member) {
   this.member = member;
   this.date = date;
@@ -10,7 +11,21 @@ MemberDateAnalysis = function(date, member) {
 
 MemberAnalysis = function(name) {
   this.name = name;
+  // Array of <MemberDateAnalysis>.
   this.attendance = [];
+  this.attendReports = {};
+};
+
+// @param {Array<GroupAnalysis>} groupAnalysis
+MemberAnalysis.prototype.fillAttendance = function(groupAnalysis) {
+  this.attendance = [];
+  for (var i = 0; i < groupAnalysis.length; ++i) {
+    if (groupAnalysis[i].date in this.attendReports) {
+      this.attendance.push(this.attendReports[groupAnalysis[i].date]);
+    } else {
+      this.attendance.push(null);
+    }
+  }
 };
 
 GroupAnalysisController = function($scope, $location, $window, $filter, ChartsService) {
@@ -72,17 +87,13 @@ GroupAnalysisController.prototype.handleLoadingReports = function(response) {
 
     var analysis = new GroupAnalysis(date);
     this.groupAnalysis.push(analysis);
+
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: this.reportSpreadSheetId,
       range: range
     }).then(angular.bind(this, this.handleLoadingReport, analysis),
       angular.bind(this, this.handleLoadingReportFailure, analysis));
   }
-  this.groupAnalysis.sort(function(a, b) {
-    if (a.date > b.date) return 1;
-    if (a.date < b.date) return -1;
-    return 0;
-  });
 };
 
 GroupAnalysisController.prototype.back = function() {
@@ -103,16 +114,32 @@ GroupAnalysisController.prototype.handleLoadingReport = function(
       this.memberAnalysisObject[member.name] = newAnalysis;
       this.memberAnalysis.push(newAnalysis);
     }
-    this.memberAnalysisObject[member.name].attendance.push(
-        new MemberDateAnalysis(groupAnalysis.date, member));
+    this.memberAnalysisObject[member.name].attendReports[groupAnalysis.date] =
+        new MemberDateAnalysis(groupAnalysis.date, member);
   }
   groupAnalysis.counter.increment(memberData);
+
   if (this.loadedAnalysis == this.groupAnalysis.length) {
-    if (this.ChartsService.initialized) {
-      this.drawCharts();
-    } else {
-      this.ChartsService.promise.then(angular.bind(this, this.drawCharts));
-    }
+    this.loadingReportsDone();
+  }
+};
+
+GroupAnalysisController.prototype.loadingReportsDone = function() {
+  this.groupAnalysis.sort(function(a, b) {
+      if (a.date > b.date) return -1;
+      if (a.date < b.date) return 1;
+      return 0;
+      });
+
+  console.log(this.groupAnalysis);
+  for (var memberName in this.memberAnalysisObject) {
+    this.memberAnalysisObject[memberName].fillAttendance(this.groupAnalysis);
+  }
+
+  if (this.ChartsService.initialized) {
+    this.drawCharts();
+  } else {
+    this.ChartsService.promise.then(angular.bind(this, this.drawCharts));
   }
   this.$scope.$apply();
 };
@@ -148,6 +175,7 @@ GroupAnalysisController.prototype.drawCharts = function() {
     title: '출석 상황',
     colors: lineColors,
     legend: { position: 'bottom' }};
-  var chart = new google.visualization.LineChart(document.getElementById('group_attendance_charts'));
+  var chart = new google.visualization.LineChart(
+      document.getElementById('group_attendance_charts'));
   chart.draw(data, options);
 };

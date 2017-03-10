@@ -134,6 +134,22 @@ SaenuriYoungModule.directive('elastic', [
         };
     }
 ]);
+
+SaenuriYoungModule.directive('memberStatusIcon',
+    function() {
+        return {
+            scope: {
+              status: '@',
+              gray: '@'
+            },
+            link: function($scope, element) {
+              $scope['memberStatus'] = MemberData.status[$scope['status']];
+            },
+            template: '<md-icon ng-if="memberStatus.materialIconClass" class="material-icons"aria-label="Attendance Icon" ng-style="memberStatus.getColor(gray)">{{memberStatus.materialIconClass}}</md-icon>' +
+            '<md-icon ng-if="memberStatus.svgSrc" md-svg-src="{{memberStatus.svgSrc}}" aria-label="Attendance Icon" ng-style="memberStatus.getColor(gray)"></md-icon>'
+        };
+    }
+);
 // Router.
 SaenuriYoungModule.config(function($routeProvider) {
   var AuthServiceResolve = {
