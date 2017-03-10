@@ -4,7 +4,14 @@
       <md-button class="md-icon-button" href="/#/">
         <md-icon class="material-icons" aria-label="Back">arrow_back</md-icon>
       </md-button>
-      <span>전체 목장 리포트</span>
+      <span>전체 목장 리포트: </span>
+      <md-datepicker ng-model="reportSummaryCtrl.currentReportDate"
+                     class="toolbar-datepicker"
+                     md-placeholder="Enter date"
+                     md-open-on-focus
+                     ng-change="reportSummaryCtrl.dateChange()"
+                     md-date-filter="reportSummaryCtrl.onlySundayPredicate">
+      </md-datepicker>
     </div>
   </div>
 </md-toolbar>

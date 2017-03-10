@@ -4,7 +4,14 @@
       <md-button class="md-icon-button" href="/#/">
         <md-icon class="material-icons" aria-label="Back">arrow_back</md-icon>
       </md-button>
-      <span>{{ submitReportCtrl.name }} 목장 리포트</span>
+      <span>{{ submitReportCtrl.name }} 목장 리포트: </span>
+      <md-datepicker ng-model="submitReportCtrl.currentReportDate"
+                     class="toolbar-datepicker"
+                     md-placeholder="Enter date"
+                     md-open-on-focus
+                     ng-change="submitReportCtrl.dateChange()"
+                     md-date-filter="submitReportCtrl.onlySundayPredicate">
+      </md-datepicker>
     </div>
     <div>
       <md-button class="md-icon-button" ng-click="submitReportCtrl.submitReport()">
@@ -30,7 +37,7 @@
                <div layout="row">
                  <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
                  <md-button ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}">
-                   {{ submitReportCtrl.name }} 목장 리포트 : {{ submitReportCtrl.reportTitle() }}</md-button>
+                   {{ submitReportCtrl.name }} 목장 리포트 원본 데이터 보기</md-button>
                </div>
              </md-card-title-text>
            </md-card-title>

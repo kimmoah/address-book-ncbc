@@ -2,9 +2,16 @@ var ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 var REPORT_LOG_COLUMN = 'F';
 
-function reportTitle() {
+function thisWeekSunday() {
   var today = new Date();
   var diff = today.getDate() - today.getDay();
-  var sunday = new Date(today.setDate(diff));
-  return sunday.getFullYear() + '/' + (sunday.getMonth()+1) + '/' + sunday.getDate();
+  return new Date(today.setDate(diff));
+}
+
+function dateToReportTitle(date) {
+  return date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate();
+}
+
+function reportTitle() {
+  return dateToReportTitle(thisWeekSunday());
 }

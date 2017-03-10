@@ -5,7 +5,6 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   this.$location = $location;
   this.$window = $window;
 
-
   this.lastSavedTimestamp = 0;
 
   // To use from the template.
@@ -36,6 +35,14 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
 
   this.selectedTabIndex = 0;
 
+  var date = new Date(parseInt(search['date'], 10));
+  if (Object.prototype.toString.call(date) === "[object Date]" &&
+      !isNaN( date.getTime())) {
+    this.currentReportDate = date;
+  } else {
+    this.currentReportDate = thisWeekSunday();
+  }
+
   if (this.name && this.reportSpreadSheetId) {
     var range = this.name + '!A2:A100';
     gapi.client.sheets.spreadsheets.values.get({
@@ -45,7 +52,7 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
       angular.bind(this, this.handleLoadingGroupFailure));
 
     var reportRange =
-      reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
+      this.reportTitle() + '!A1:' + this.reportRangeCharacter + '100';
     gapi.client.sheets.spreadsheets.values.get({
       spreadsheetId: this.reportSpreadSheetId,
       range: reportRange
@@ -65,6 +72,17 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
   $scope.$on('$locationChangeStart', angular.bind(this, this.locationChangeStart));
 };
 
+SubmitReportController.prototype.onlySundayPredicate = function(date) {
+  var day = date.getDay();
+  return day === 0;
+};
+
+SubmitReportController.prototype.dateChange = function() {
+  var search = this.$location.search();
+  search['date'] = this.currentReportDate.getTime();
+  this.$location.search(search);
+};
+
 SubmitReportController.prototype.locationChangeStart = function(event, next, current) {
   if (this.reportForm.$dirty) {
     if (!confirm('아직 저장되지 않았습니다. 그래도 다른 페이지로 이동하시겠습니까?')) {
@@ -80,7 +98,7 @@ SubmitReportController.prototype.checkOkToUnload = function() {
 };
 
 SubmitReportController.prototype.reportTitle = function() {
-  return reportTitle();
+  return dateToReportTitle(this.currentReportDate);
 };
 
 // Loading members in the group.
@@ -115,6 +133,7 @@ SubmitReportController.prototype.handleLoadingGroupFailure = function(response) 
 SubmitReportController.prototype.handleLoadingReport = function(response) {
   this.storedReport = {}
   if (!response.result.values) {
+    this.$scope.$apply();
     return;
   }
 
@@ -180,7 +199,7 @@ SubmitReportController.prototype.submitReport = function(response) {
     'requests': [{
       'addSheet': {
         'properties': {
-          'title': reportTitle(),
+          'title': this.reportTitle(),
           'gridProperties': {
             'rowCount': 100,  // give enough number.
             'frozenRowCount': 1,
@@ -254,7 +273,7 @@ SubmitReportController.prototype.addReportSheet = function() {
   this.reportForm.$setPristine();
   this.lastSavedTimestamp = Date.now();
 
-  var range = reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
+  var range = this.reportTitle() + '!A1:' + this.reportRangeCharacter + values.length;
   gapi.client.sheets.spreadsheets.values.batchUpdate({
     spreadsheetId: this.reportSpreadSheetId,
     valueInputOption: 'RAW',

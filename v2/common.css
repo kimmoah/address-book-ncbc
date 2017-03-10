@@ -1,0 +1,11 @@
+.toolbar-datepicker .md-datepicker-input {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.toolbar-datepicker .md-datepicker-input-container {
+  border-bottom-color: rgba(255, 255, 255, 0.38);
+}
+
+.toolbar-datepicker .md-datepicker-expand-triangle {
+  border-top-color: rgba(255, 255, 255, 0.38) !important;
+}

@@ -111,7 +111,7 @@ AddressBookController.prototype.openMenu = function($mdMenu, ev) {
 SaenuriYoungModule.controller('TopPageController', ['$scope', '$mdDialog', '$location', 'AuthService', TopPageController]);
 SaenuriYoungModule.controller('AddressBookController', ['$scope', '$mdDialog', '$mdMenu', 'GroupsService', AddressBookController]);
 SaenuriYoungModule.controller('SubmitReportController', ['$scope', '$location', '$mdDialog', 'AuthService', SubmitReportController]);
-SaenuriYoungModule.controller('ReportSummaryController', ['$scope', 'GroupsService', ReportSummaryController]);
+SaenuriYoungModule.controller('ReportSummaryController', ['$scope', '$location', 'GroupsService', ReportSummaryController]);
 SaenuriYoungModule.controller('GroupAnalysisController', ['$scope', '$location', '$window', 'ChartsService', GroupAnalysisController]);
 
 // Copied from http://stackoverflow.com/questions/17772260/textarea-auto-height.
