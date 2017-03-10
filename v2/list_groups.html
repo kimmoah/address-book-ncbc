@@ -31,7 +31,9 @@
                       ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}">
              <img src="logo_sheets_32px.png" width="32px" height="32px"></a>
            </md-button>
-           <span class="md-subhead">새누리 청년 공동체 주소록</span>
+           <md-button ng-href="https://docs.google.com/spreadsheets/d/{{topCtrl.addressBookSpreadSheetId}}">
+             새누리 청년 공동체 주소록
+           </md-button>
          </div>
        </md-card-title-text>
      </md-card-title>
@@ -43,7 +45,9 @@
            <md-button class="md-icon-button" href="/#/summary">
              <md-icon class="material-icons" aria-label="Back" style="color: #E65100">assessment</md-icon>
            </md-button>
-           <span class="md-subhead">{{addressBookCtrl.getReportTitle()}} 전체 리포트 요약 보기</span>
+           <md-button href="/#/summary">
+             {{addressBookCtrl.getReportTitle()}} 전체 리포트 요약 보기
+           </md-button>
          </div>
        </md-card-title-text>
      </md-card-title>

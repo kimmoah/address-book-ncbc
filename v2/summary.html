@@ -27,10 +27,10 @@
           </li>
         </ul>
         <ul style="list-style-type:none">
-          <li>자세한 출석 상황
+          <li>자세한 출결 상황
             <ul>
               <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-               <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
+               <member-status-icon status="{{$index}}" style="padding-right: 16px;"></member-status-icon> {{ status.text }} : {{ reportSummaryCtrl.total.statusCount[$index] }} ( {{ reportSummaryCtrl.total.statusCount[$index] * 100 / reportSummaryCtrl.total.numMembers | number:1 }} %)
               </li>
             </ul>
           </li>
@@ -53,10 +53,10 @@
           </li>
         </ul>
         <ul style="list-style-type:none">
-          <li>자세한 출석 상황
+          <li>자세한 출결 상황
             <ul>
               <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ tierSummary.attendance.statusCount[$index] }} ( {{ tierSummary.attendance.statusCount[$index] * 100 / tierSummary.attendance.numMembers | number:1 }} %)
+                <member-status-icon status="{{$index}}" style="padding-right: 16px;"></member-status-icon> {{ status.text }} : {{ tierSummary.attendance.statusCount[$index] }} ( {{ tierSummary.attendance.statusCount[$index] * 100 / tierSummary.attendance.numMembers | number:1 }} %)
               </li>
             </ul>
           </li>
@@ -82,10 +82,10 @@
             </li>
           </ul>
           <ul style="list-style-type:none">
-            <li>자세한 출석 상황
+            <li>자세한 출결 상황
               <ul>
                 <li ng-repeat="status in reportSummaryCtrl.memberStatus">
-                  <member-status-icon status="{{$index}}"></member-status-icon> {{ status.text }} : {{ group.attendance.statusCount[$index] }} ( {{ group.attendance.statusCount[$index] * 100 / group.attendance.numMembers | number:1 }} %)
+                  <member-status-icon status="{{$index}}" style="padding-right: 16px;"></member-status-icon> {{ status.text }} : {{ group.attendance.statusCount[$index] }} ( {{ group.attendance.statusCount[$index] * 100 / group.attendance.numMembers | number:1 }} %)
                 </li>
               </ul>
             </li>

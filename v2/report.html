@@ -29,7 +29,8 @@
              <md-card-title-text>
                <div layout="row">
                  <a ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}"><img src="logo_sheets_32px.png" width="32px" height="32px"></a>
-                 <span class="md-headline">{{ submitReportCtrl.name }} 목장 리포트 : {{ submitReportCtrl.reportTitle() }}</span>
+                 <md-button ng-href="https://docs.google.com/spreadsheets/d/{{submitReportCtrl.reportSpreadSheetId}}">
+                   {{ submitReportCtrl.name }} 목장 리포트 : {{ submitReportCtrl.reportTitle() }}</md-button>
                </div>
              </md-card-title-text>
            </md-card-title>
@@ -41,7 +42,9 @@
                 <md-button class="md-icon-button" ng-href="{{ submitReportCtrl.getAnalysisReportLink()}}">
                   <md-icon class="material-icons" aria-label="Back" style="color: #E65100">assessment</md-icon>
                 </md-button>
-                <span class="md-headline">{{ submitReportCtrl.name }} 목장 출석 분석</span>
+                <md-button ng-href="{{ submitReportCtrl.getAnalysisReportLink()}}">
+                  {{ submitReportCtrl.name }} 목장 출석 분석
+                </md-button>
               </div>
             </md-card-title-text>
           </md-card-title>
