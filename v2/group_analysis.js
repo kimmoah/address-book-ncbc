@@ -125,17 +125,18 @@ GroupAnalysisController.prototype.handleLoadingReport = function(
 };
 
 GroupAnalysisController.prototype.loadingReportsDone = function() {
+  // Recent days first when building the table.
   this.groupAnalysis.sort(function(a, b) {
       if (a.date > b.date) return -1;
       if (a.date < b.date) return 1;
       return 0;
       });
 
-  console.log(this.groupAnalysis);
   for (var memberName in this.memberAnalysisObject) {
     this.memberAnalysisObject[memberName].fillAttendance(this.groupAnalysis);
   }
 
+  // Last days first when darwing a graph.
   if (this.ChartsService.initialized) {
     this.drawCharts();
   } else {
@@ -159,7 +160,7 @@ GroupAnalysisController.prototype.drawCharts = function() {
   }
   arrayData.push(dataLegend);
   var dateFilter = this.$filter('date');
-  for (var i = 0; i < this.groupAnalysis.length; ++i) {
+  for (var i = this.groupAnalysis.length - 1; i >= 0; --i) {
     var group = this.groupAnalysis[i];
     var groupData = [];
     groupData.push(dateFilter(group.date, 'yyyy/MM/dd'));
@@ -169,7 +170,6 @@ GroupAnalysisController.prototype.drawCharts = function() {
     }
     arrayData.push(groupData);
   }
-  console.log(arrayData);
   var data = google.visualization.arrayToDataTable(arrayData);
   var options = {
     title: '출석 상황',
