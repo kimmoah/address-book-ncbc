@@ -1,8 +1,4 @@
-attendanceSummary = function(name) {
-  this.name = name;
-  this.attendance = new AttendanceCounter();
-};
-
+// Summary per tier.
 TierSummary = function(name, backgroundColor) {
   this.name = name;
   this.backgroundColor = backgroundColor;
@@ -14,16 +10,18 @@ TierSummary.prototype.cardTitleStyle = function() {
   return {'background-color': this.backgroundColor, 'color': 'white'};
 };
 
+// Summary per small group.
 GroupSummary = function(group, tier) {
   this.group = group;
   this.loadingStatus = null;
   this.attendance = null;
   this.members = null;
 
-  // TierSummary.
+  // Tier that this group belongs to.
   this.tier = tier;
 };
 
+// Initializes this group with members loaded by MemberDataFromSheet().
 GroupSummary.prototype.loadMembers = function(members) {
   this.attendance = new AttendanceCounter();
   this.attendance.increment(members);
