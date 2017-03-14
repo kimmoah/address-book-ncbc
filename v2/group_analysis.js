@@ -47,7 +47,11 @@ GroupAnalysisController = function($scope, $location, $window, $filter, ChartsSe
   this.memberAnalysisObject = {};
   // MemberAnalysis. For each ordering.
   this.memberAnalysis = [];
+  this.filteredMemberAnalysis = [];
   this.loadedAnalysis = 0;
+
+  // If true, render members only in the address book.
+  this.showMembersInAddressbookOnly = true;
 
   this.analysisOrder = 'name';
 
@@ -118,9 +122,25 @@ GroupAnalysisController.prototype.handleLoadingReport = function(
         new MemberDateAnalysis(groupAnalysis.date, member);
   }
   groupAnalysis.counter.increment(memberData);
+  this.filteredMemberAnalysis = this.memberAnalysis;
 
   if (this.loadedAnalysis == this.groupAnalysis.length) {
     this.loadingReportsDone();
+  }
+};
+
+GroupAnalysisController.prototype.changeFilter = function() {
+  if (!this.showMembersInAddressbookOnly) {
+    this.filteredMemberAnalysis = this.memberAnalysis;
+    return;
+  }
+  this.filteredMemberAnalysis = [];
+  for (var i = 0; i < this.memberAnalysis.length; ++i) {
+    var member = this.memberAnalysis[i];
+    if (member.attendance.length == 0 || !member.attendance[0]) {
+      continue;
+    }
+    this.filteredMemberAnalysis.push(member);
   }
 };
 
@@ -135,6 +155,7 @@ GroupAnalysisController.prototype.loadingReportsDone = function() {
   for (var memberName in this.memberAnalysisObject) {
     this.memberAnalysisObject[memberName].fillAttendance(this.groupAnalysis);
   }
+  this.changeFilter();
 
   // Last days first when darwing a graph.
   if (this.ChartsService.initialized) {

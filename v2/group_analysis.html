@@ -22,20 +22,24 @@
       <md-card-title-text>목원별 출석 상황</md-card-title-text>
     </md-card-title>
     <md-card-content>
+    <md-switch ng-model="groupAnalysisCtrl.showMembersInAddressbookOnly" aria-label="Show members in addressbook only" ng-change="groupAnalysisCtrl.changeFilter()">
+      주소록에 있는 목원만 보기
+    </md-switch>
+  </md-switch>
     <md-table-container>
       <table md-table>
         <thead md-head md-order="groupAnalysisCtrl.analysisOrder">
           <tr md-row>
             <th md-column md-order-by="name">이름</th>
-            <th md-column ng-repeat="group in groupAnalysisCtrl.groupAnalysis" style="padding: 0px;">
+            <th md-column ng-repeat="group in groupAnalysisCtrl.groupAnalysis" style="padding: 0px; text-align:center;">
               {{ group.date | date:'yyyy/MM/dd' }}
             </th>
           </tr>
         </thead>
         <tbody md-body>
-        <tr md-row ng-repeat="analysis in groupAnalysisCtrl.memberAnalysis | orderBy: groupAnalysisCtrl.analysisOrder">
+        <tr md-row ng-repeat="analysis in groupAnalysisCtrl.filteredMemberAnalysis | orderBy: groupAnalysisCtrl.analysisOrder">
           <td md-cell align="center">{{ analysis.name }}</td>
-          <td md-cell align="center" ng-repeat="attend in analysis.attendance track by $index">
+          <td md-cell style="text-align: center; padding: 0px;" ng-repeat="attend in analysis.attendance track by $index">
             <div ng-if="attend" layout="row" layout-align="center center">
             <member-status-icon status="{{attend.member.status}}">
             </member-status-icon>
