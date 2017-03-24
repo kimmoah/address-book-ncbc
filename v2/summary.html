@@ -105,11 +105,11 @@
               <md-icon ng-if="member.svgSrc()" md-svg-src="{{member.svgSrc()}}" aria-label="attendance Icon" ng-style="member.statusIconColor(member.status)"></md-icon>
               <div class="md-list-item-text" layout="column">
               <h3>{{ member.name }}</h3>
-                <h4>기도 제목: 
+                <p>기도 제목: 
                   <span ng-if="member.prayer">{{ member.prayer }}</span>
                   <span ng-if="!member.prayer">N/A</span>
-                </h4>
-                <h4 ng-if="member.note">노트: {{ member.note }}</h4>
+                </p>
+                <p ng-if="member.note">노트: {{ member.note }}</p>
               </div>
             </md-list-item>
           </md-list>
