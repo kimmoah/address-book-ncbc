@@ -78,7 +78,7 @@
                    <textarea elastic ng-model="member.prayer" layout-fill flex></textarea>
                  </md-input-container>
                </md-list-item>
-               <md-list-item>
+               <md-list-item ng-if="submitReportCtrl.showMemberNote">
                  <md-input-container style="width: 100%">
                    <label>메모 (결석 사유 및 특별한 일 등등...)</label>
                      <textarea elastic ng-model="member.note" layout-fill flex></textarea>
@@ -145,7 +145,7 @@
         </md-card-content></md-card>
       </md-tab-body>
     </md-tab>
-    <md-tab id="memo">
+    <md-tab id="memo" ng-if="submitReportCtrl.showMemberNote">
       <md-tab-label>메모</md-tab-label>
       <md-tab-body>
       <md-card><md-card-content>

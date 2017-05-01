@@ -26,6 +26,8 @@ SubmitReportController = function($scope, $location, $mdDialog, $window) {
 
   this.groupNote = '';
 
+  this.showMemberNote = true;
+
   this.groupsOrder = 'name'
 
   this.reportRangeCharacter = 'D';
