@@ -21,11 +21,16 @@ MemberData = function(name) {
 };
 
 MemberData.status = [
+/*
   new MemberStatus('잘 모름', '#212121', 'help', '', false),
   new MemberStatus('모두 참석하지 않음', '#B71C1C', 'cancel', '', false),
   new MemberStatus('예배만 참석', '#00E676', '', 'church.svg', true),
   new MemberStatus('목장만 참석', '#FFEB3B', 'people', '', true),
   new MemberStatus('예배 및 목장 참석', '#0091EA', 'thumb_up', '', true)
+*/
+
+  new MemberStatus('모두 참석하지 않음', '#B71C1C', 'thumb_down', '', false),
+  new MemberStatus('예배 또는 목장 참석', '#0091EA', 'thumb_up', '', true)
 ];
 
 MemberData.prototype.materialIconClass = function() {
